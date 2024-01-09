@@ -7,7 +7,7 @@
 #include "shape_i.h"
 using namespace std;
 
-// hi dan, this is a test 
+// hi Alicia, this is a test 
 
 void test();
 void drawBorder();
