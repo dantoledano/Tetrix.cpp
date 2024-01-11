@@ -1,6 +1,7 @@
 #include "point.h"
 #include "gameConfig.h"
 #include "general.h"
+#include "shape.h"
 #include <iostream>
 #include <Windows.h>
 using namespace std;
@@ -39,6 +40,7 @@ void Point::movePoint(GameConfig::eKeys key)
 		diff_y = 1;
 		break;
 	}
+
 
 	x += diff_x;
 	if (x > GameConfig::GAME_WIDTH)
