@@ -53,7 +53,7 @@ void test()
 
 	while (true)
 	{
-		int keyPressed = 0;
+		int keyPressed = 'z';
 		if (_kbhit())
 		{
 			keyPressed = _getch();
