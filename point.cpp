@@ -10,8 +10,8 @@ void Point::initPoint(int x, int y)
 {
 	this->x = x;
 	this->y = y;
-	diff_x = 1;
-	diff_y = 0;
+	diff_x = 0;
+	diff_y = 1;
 }
 
 
