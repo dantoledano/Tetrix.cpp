@@ -1,6 +1,7 @@
-﻿#include "shape.h"
+#include "shape.h"
 #include "point.h"
 #include "gameConfig.h"
+#include <Windows.h>
 
 void Shape::init(char sign, char id)
 {
@@ -68,6 +69,9 @@ void Shape::move(GameConfig::eKeys direction, Shape& s)
 		break;
 	case GameConfig::eKeys::CROTATE:
 		rotateCounterClockwise(s);
+		break;
+	case GameConfig::eKeys::DROP:  // Added case for dropping the shape
+		dropShape(s);
 		break;
 	case GameConfig::eKeys::ESC:
 		break;
@@ -141,4 +145,31 @@ void Shape::rotateClockwise(Shape& currentShape) {
 		currentShape = tempShape;
 	}*/
 	currentShape = tempShape;
+}
+
+void Shape::dropShape(Shape& s)
+{
+	// Drop the shape until it reaches the bottom of the game screen
+	while (!hasReachedBottom(s))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			body[i].draw(' ');
+			body[i].movePoint(GameConfig::eKeys::DOWN);
+		}
+		for (int i = 0; i < 4; i++)
+			body[i].draw('#');
+		Sleep(50);
+	}
+}
+
+bool Shape::hasReachedBottom(const Shape& s)
+{
+	// Check if any part of the shape has reached the bottom of the game screen
+	for (int i = 0; i < 4; i++)
+	{
+		if (body[i].getY() == GameConfig::GAME_HEIGHT)
+			return true;
+	}
+	return false;
 }
