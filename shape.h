@@ -12,5 +12,7 @@ public:
 	void move(GameConfig::eKeys direction, Shape& s);
 	void rotateCounterClockwise(Shape& currentShape);
 	void rotateClockwise(Shape& currentShape);
+	void dropShape(Shape& s);
+	bool hasReachedBottom(const Shape& s);
 };
 
