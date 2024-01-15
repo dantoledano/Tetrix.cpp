@@ -5,7 +5,7 @@
 #include "gameConfig.h"
 #include "point.h"
 #include "shape.h"
-//#include "board.h"
+#include "board.h"
 
 void gotoxy(int, int);
 void clrscr();
