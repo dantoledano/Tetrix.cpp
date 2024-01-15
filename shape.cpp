@@ -51,6 +51,7 @@ void Shape::init(char id)
 		break;
 	}
 	drawShape(*this);
+
 }
 
 
@@ -70,7 +71,7 @@ void Shape::drawShape(const Shape& s)
 }
 
 
-void Shape::move(GameConfig::eKeys direction, const Shape& s)
+void Shape::move(GameConfig::eKeys direction, const Shape& s, Board& board)
 {
 	eraseShape(s);
 	switch (direction)
@@ -97,6 +98,14 @@ void Shape::move(GameConfig::eKeys direction, const Shape& s)
 		break;
 	}
 	drawShape(s);  // re-drawing of the shape at new location
+	if (hasReachedBottom(s))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			board.matrix[s.body[i].getY()-1][s.body[i].getX()-1] = '#'; // -1 beacuse min point is (1,1) and min cell in board is (0,0). also Y represents the rows and X represents the cols
+
+		}
+	}
 }
 
 
@@ -260,6 +269,8 @@ void Shape::dropShape(const Shape& s)
 		Sleep(50);
 	}
 }
+
+
 
 
 bool Shape::hasReachedBottom(const Shape& s)
