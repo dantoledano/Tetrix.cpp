@@ -4,11 +4,9 @@
 
 class Board
 {
-private:
-	char matrix[GameConfig::GAME_WIDTH][GameConfig::GAME_HEIGHT];
-public:
+// private:
+public: 
+	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
     Board(); //ctor
-	char* getMatrix();
-
 };
 
