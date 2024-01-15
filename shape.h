@@ -9,9 +9,9 @@ private:
 	Point body[4];
 public:
 	void init(char id);
-	void move(GameConfig::eKeys direction, const Shape& s, Board& board);
-	void rotateCounterClockwise(const Shape& currentShape);
-	void rotateClockwise(const Shape& currentShape);
+	void move(GameConfig::eKeys direction, Shape& s, Board& board);
+	void rotateCounterClockwise(Shape& currentShape, Board& board);
+	void rotateClockwise(Shape& currentShape,Board& board);
 	void dropShape(const Shape& s, Board& board);
 	bool hasReachedBottom(const Shape& s);
 	bool hasReachedRightWall(const Shape& s);
@@ -22,9 +22,9 @@ public:
 	void correctLocationOfShape(const Shape& s);
 	void eraseShape(const Shape& s);
 	void drawShape(const Shape& s);
-	void moveShapeToTheRight(const Shape& s, GameConfig::eKeys direction);
-	void moveShapeToTheLeft(const Shape& s, GameConfig::eKeys direction);
+	void moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& board);
+	void moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& board);
 	void moveShapeDown(const Shape& s, GameConfig::eKeys direction);
 	bool hasReachedToAnotherShape(const Shape& s, Board& board);
-
+	//bool isRotationValid(const Shape& currentShape, Board& board);
 };
