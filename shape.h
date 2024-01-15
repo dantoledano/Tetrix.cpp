@@ -1,5 +1,6 @@
 #pragma once
 #include "point.h"
+#include "board.h"
 
 class Shape
 {
@@ -8,7 +9,7 @@ private:
 	Point body[4];
 public:
 	void init(char id);
-	void move(GameConfig::eKeys direction, const Shape& s);
+	void move(GameConfig::eKeys direction, const Shape& s, Board& board);
 	void rotateCounterClockwise(const Shape& currentShape);
 	void rotateClockwise(const Shape& currentShape);
 	void dropShape(const Shape& s);
