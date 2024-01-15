@@ -12,7 +12,7 @@ public:
 	void move(GameConfig::eKeys direction, const Shape& s, Board& board);
 	void rotateCounterClockwise(const Shape& currentShape);
 	void rotateClockwise(const Shape& currentShape);
-	void dropShape(const Shape& s);
+	void dropShape(const Shape& s, Board& board);
 	bool hasReachedBottom(const Shape& s);
 	bool hasReachedRightWall(const Shape& s);
 	bool hasReachedLeftWall(const Shape& s);
@@ -25,4 +25,6 @@ public:
 	void moveShapeToTheRight(const Shape& s, GameConfig::eKeys direction);
 	void moveShapeToTheLeft(const Shape& s, GameConfig::eKeys direction);
 	void moveShapeDown(const Shape& s, GameConfig::eKeys direction);
+	bool hasReachedToAnotherShape(const Shape& s, Board& board);
+
 };
