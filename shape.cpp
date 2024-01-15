@@ -83,7 +83,7 @@ void Shape::move(GameConfig::eKeys direction, const Shape& s, Board& board)
 		rotateCounterClockwise(s);
 		break;
 	case GameConfig::eKeys::DROP: 
-		dropShape(s);
+		dropShape(s, board);
 		break;
 	case GameConfig::eKeys::ESC:
 		break;
@@ -98,7 +98,7 @@ void Shape::move(GameConfig::eKeys direction, const Shape& s, Board& board)
 		break;
 	}
 	drawShape(s);  // re-drawing of the shape at new location
-	if (hasReachedBottom(s))
+	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board)) 
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -106,6 +106,26 @@ void Shape::move(GameConfig::eKeys direction, const Shape& s, Board& board)
 
 		}
 	}
+}
+
+
+bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board)
+{
+	int maxY = body[0].getY(); // search for the lowest part of the shape
+	for (int i = 1; i < 4; i++)
+	{
+		if (body[i].getY() > maxY)
+			maxY = body[i].getY();
+	}
+	for (int i = 0; i < 4; i++)  // search at any low point if its right above some other shape
+	{
+		if (body[i].getY() == maxY)
+		{
+			if (board.matrix[s.body[i].getY()][s.body[i].getX()-1] == '#')
+				return true;
+		}
+	}
+	return false;
 }
 
 
@@ -254,10 +274,10 @@ bool Shape::passedLeftWall(const Shape& s)
 }
 
 
-void Shape::dropShape(const Shape& s)
+void Shape::dropShape(const Shape& s, Board& board)
 {
 	// Drop the shape until it reaches the bottom of the game screen
-	while (!hasReachedBottom(s))
+	while (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -269,8 +289,6 @@ void Shape::dropShape(const Shape& s)
 		Sleep(50);
 	}
 }
-
-
 
 
 bool Shape::hasReachedBottom(const Shape& s)
