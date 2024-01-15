@@ -14,8 +14,7 @@ int main()
 
 void test()
 {
-	/*Board b1;
-	char* matrixPtr = b1.getMatrix();*/
+	Board b1;
 	drawBorder();
 	Shape s;
 	s.init(randomType());
@@ -29,7 +28,7 @@ void test()
 			if (keyPressed == (int)GameConfig::eKeys::ESC)
 				break;
 		}
-		s.move((GameConfig::eKeys)keyPressed, s);
+		s.move((GameConfig::eKeys)keyPressed, s, b1);
 	}
 }
 
