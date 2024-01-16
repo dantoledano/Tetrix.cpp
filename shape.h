@@ -29,4 +29,3 @@ public:
 	bool collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board);
 
 };
-
