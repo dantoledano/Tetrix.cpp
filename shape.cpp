@@ -121,10 +121,11 @@ void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
 		{
 			activeX = s.body[i].getX();
 			activeY = s.body[i].getY();
-			board.matrix[activeY-1][activeX-1].setActive(true); // -1 beacuse min point is (1,1) and min cell in board is (0,0). also Y represents the rows and X represents the cols
-			board.matrix[activeY-1][activeX-1].setX(activeX);
-			board.matrix[activeY-1][activeX-1].setY(activeY);
+			//board.matrix[activeY-1][activeX-1].setActive(true); // -1 beacuse min point is (1,1) and min cell in board is (0,0). also Y represents the rows and X represents the cols
+			//board.matrix[activeY-1][activeX-1].setX(activeX);
+			//board.matrix[activeY-1][activeX-1].setY(activeY);
 			//board.matrix[activeY-1][activeX-1].draw('#');
+			board.matrix[activeY - 1][activeX - 1] = '#';
 			
 		}
 		board.DrawBoard();
@@ -139,7 +140,7 @@ bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1].getActive())
+		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1]=='#')//.getActive()
 		{
 			return true;
 		}
@@ -152,7 +153,7 @@ bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1].getActive())
+		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1]=='#') //.getActive()
 			return true;
 	}
 	return false;
@@ -221,7 +222,7 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 	bool collided = false;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1].getActive())
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1]=='#')//.getActive()
 		{
 			collided = true;
 		}
@@ -248,7 +249,7 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 	bool collided = false;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1].getActive())
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1]=='#') //.getActive()
 		{
 			collided = true;
 		}
