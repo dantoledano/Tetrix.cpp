@@ -5,11 +5,12 @@
 class Shape
 {
 private:
-	char id; 
+	char id;
 	Point body[4];
 public:
 	void init(char id, Board& board);
-	void move(GameConfig::eKeys direction, Shape& s, Board& board);
+//	void move(GameConfig::eKeys direction, Shape& s, Board& board);
+	void move(Shape& s, Board& board);
 	void rotateCounterClockwise(Shape& currentShape, Board& board);
 	void rotateClockwise(Shape& currentShape, Board& board);
 	void dropShape(const Shape& s, Board& board);
@@ -28,5 +29,8 @@ public:
 	bool hasReachedToAnotherShape(const Shape& s, Board& board);
 	bool collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board);
 	bool isGameOver(const Shape& s) const;
+	bool isShapeOver(Shape& s, Board& board);
+	//bool play(Board& board);
+	//int checkKeyPressed(int keyPressed, Shape& LeftShape, Shape& RightShape);
 };
 
