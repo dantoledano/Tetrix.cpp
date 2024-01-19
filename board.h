@@ -5,14 +5,17 @@
 
 class Board
 {
-	// private:
+	int xPos;
+	//char keys[5];
 public:
 	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
-	Board(); //ctor
+	Board(int xPos); //ctor
+	//void setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey);
+	int getLeft() { return xPos; }
+	void drawBorder();
 	void eraseLine(int indexLine);
 	bool isFullLine(int line) const;
 	void clearFullLines();
 	void DrawBoard();
 	void DrawCubeInBoard(int x, int y, char ch);
-	bool isGameOver() const;
 };
