@@ -2,10 +2,11 @@
 #include "point.h"
 #include "general.h"
 #include <Windows.h>
+#include "gameConfig.h"
 using namespace std;
 
 
-Board::Board(int xPos): xPos(xPos) //ctor
+Board::Board(int xPos) : xPos(xPos)
 {
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
@@ -15,14 +16,14 @@ Board::Board(int xPos): xPos(xPos) //ctor
 }
 
 
-//void Board::setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey)
-//{
-//    this->keys[0] = leftKey;
-//    this->keys[1] = rightKey;
-//    this->keys[2] = rotateKey;
-//    this->keys[3] = crotateKey;
-//    this->keys[4] = dropKey;
-//}
+void Board::setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey)
+{
+    this->keys[0] = leftKey;
+    this->keys[1] = rightKey;
+    this->keys[2] = rotateKey;
+    this->keys[3] = crotateKey;
+    this->keys[4] = dropKey;
+}
 
 
 void Board::drawBorder()
@@ -98,7 +99,6 @@ void Board::DrawBoard() {
         }
     }
 }
-
 
 
 
