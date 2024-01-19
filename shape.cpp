@@ -5,75 +5,69 @@
 #include "general.h"
 
 
-void Shape::init(char id)
+void Shape::init(char id, Board& board)
 {
+	this->id = id;
 	switch (id) {
 	case 'I':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 2, 1);
-		this->id = 'I';
 		break;
 	case 'O':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 2);
-		this->id = 'O';
 		break;
 	case 'S':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 2);
-		this->id = 'S';
 		break;
 	case 'Z':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 2);
-		this->id = 'Z';
 		break;
 	case 'T':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		this->id = 'T';
 		break;
 	case 'L':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 2);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 3);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 3);
-		this->id = 'L';
 		break;
 	case 'J':
 		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 2);
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 3);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 3);
-		this->id = 'J';
 		break;
 	}
-	drawShape(*this);
+	drawShape(board.getLeft(), GameConfig::MIN_Y);
 }
 
 
-void Shape::eraseShape(const Shape& s)
+void Shape::eraseShape(int left, int top)
 {
 	for (int i = 0; i < 4; i++) {
-		body[i].draw(' ');
+		body[i].draw(' ', left, top);
 	}
 }
 
 
-void Shape::drawShape(const Shape& s)
+void Shape::drawShape(int left, int top)
 {
 	for (int i = 0; i < 4; i++) {
-		body[i].draw('#');
+		body[i].draw('#', left, top);
 	}
 }
 
@@ -81,10 +75,11 @@ void Shape::drawShape(const Shape& s)
 void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
 {
 	int activeX, activeY;
-	eraseShape(s);
+	eraseShape(board.getLeft(), GameConfig::MIN_Y);
 	switch (direction)
 	{
 	case GameConfig::eKeys::ROTATE:
+	case GameConfig::eKeys::ROTATE_CAP:
 		if (s.id == 'O') {
 			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
 			break;
@@ -92,6 +87,7 @@ void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
 		rotateClockwise(s, board);
 		break;
 	case GameConfig::eKeys::CROTATE:
+	case GameConfig::eKeys::CROTATE_CAP:
 		if (s.id == 'O') {
 			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
 			break;
@@ -99,38 +95,35 @@ void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
 		rotateCounterClockwise(s, board);
 		break;
 	case GameConfig::eKeys::DROP:
+	case GameConfig::eKeys::DROP_CAP:
 		dropShape(s, board);
 		break;
 	case GameConfig::eKeys::ESC:
 		break;
 	case GameConfig::eKeys::RIGHT:
+	case GameConfig::eKeys::RIGHT_CAP:
 		moveShapeToTheRight(s, direction, board);
 		break;
 	case GameConfig::eKeys::LEFT:
+	case GameConfig::eKeys::LEFT_CAP:
 		moveShapeToTheLeft(s, direction, board);
 		break;
 	default:
 		moveShapeDown(s, direction, board);
 		break;
 	}
-	drawShape(s);  // re-drawing of the shape at new location
+	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
 	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
 	{
-		eraseShape(s);
+		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		for (int i = 0; i < 4; i++)
 		{
 			activeX = s.body[i].getX();
 			activeY = s.body[i].getY();
-			//board.matrix[activeY-1][activeX-1].setActive(true); // -1 beacuse min point is (1,1) and min cell in board is (0,0). also Y represents the rows and X represents the cols
-			//board.matrix[activeY-1][activeX-1].setX(activeX);
-			//board.matrix[activeY-1][activeX-1].setY(activeY);
-			//board.matrix[activeY-1][activeX-1].draw('#');
 			board.matrix[activeY - 1][activeX - 1] = '#';
-			
 		}
 		board.DrawBoard();
 		board.clearFullLines();
-		//board.DrawBoard();
 	}
 }
 
@@ -140,7 +133,7 @@ bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1]=='#')//.getActive()
+		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1] == '#')
 		{
 			return true;
 		}
@@ -153,7 +146,7 @@ bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1]=='#') //.getActive()
+		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1] == '#') 
 			return true;
 	}
 	return false;
@@ -222,7 +215,7 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 	bool collided = false;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1]=='#')//.getActive()
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
 		{
 			collided = true;
 		}
@@ -249,7 +242,7 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 	bool collided = false;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1]=='#') //.getActive()
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#') 
 		{
 			collided = true;
 		}
@@ -327,11 +320,11 @@ void Shape::dropShape(const Shape& s, Board& board)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			body[i].draw(' ');
+			body[i].draw(' ', board.getLeft(), GameConfig::MIN_Y);
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
 		for (int i = 0; i < 4; i++)
-			body[i].draw('#');
+			body[i].draw('#', board.getLeft(), GameConfig::MIN_Y);
 		Sleep(50);
 	}
 }
@@ -366,6 +359,18 @@ bool Shape::hasReachedLeftWall(const Shape& s)
 	{
 		if (body[i].getX() <= 1)
 			return true;
+	}
+	return false;
+}
+
+
+bool Shape::isGameOver(const Shape& s ) const{
+	for (int i = 0; i <4; i++) {
+		if (s.body[i].getY() == 1) {
+			gotoxy(30, 0);
+			std::cout << "game over";
+			return true;
+		}
 	}
 	return false;
 }
