@@ -55,7 +55,43 @@ void Shape::init(char id, Board& board)
 	drawShape(board.getLeft(), GameConfig::MIN_Y);
 }
 
+//bool Shape::play(Board& board) {
+//	Shape s;
+//	bool isGameOver = false;
+//	int direction;
+//	while (!isGameOver) {
+//		s.init(randomType(), board);
+//		while (!s.hasReachedBottom(s) && !s.hasReachedToAnotherShape(s, board) && !isGameOver)
+//		{
+//			Sleep(500);
+//			int keyPressed = 'z'; // down
+//			if (_kbhit())
+//			{
+//				keyPressed = _getch();
+//				if (keyPressed == 27)// ESC
+//					break;
+//			}
+//			direction= checkKeyPressed(keyPressed, board);
+//			s.move(direction, s, board);
+//		}
+//		isGameOver = s.isGameOver(s);
+//	}
+//	return isGameOver;
+//}
 
+//int Shape::checkKeyPressed(int keyPressed,Shape& Leftshape, Shape& RightShape) {
+//	for (int i = 0; i < 5; i++) {
+//		if (keyPressed == board.keys[i]) {
+//			return i;
+//		}
+//	}
+//	return -1;
+//}
+
+
+bool Shape::isShapeOver(Shape& s,Board& board) {
+	return (s.hasReachedBottom(s) || s.hasReachedToAnotherShape(s, board));
+}
 void Shape::eraseShape(int left, int top)
 {
 	for (int i = 0; i < 4; i++) {
@@ -71,61 +107,109 @@ void Shape::drawShape(int left, int top)
 	}
 }
 
-
-void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
-{
+void Shape::move(Shape& s, Board& board) { //int direction,
 	int activeX, activeY;
-	eraseShape(board.getLeft(), GameConfig::MIN_Y);
-	switch (direction)
-	{
-	case GameConfig::eKeys::ROTATE:
-	case GameConfig::eKeys::ROTATE_CAP:
-		if (s.id == 'O') {
-			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
-			break;
-		}
-		rotateClockwise(s, board);
-		break;
-	case GameConfig::eKeys::CROTATE:
-	case GameConfig::eKeys::CROTATE_CAP:
-		if (s.id == 'O') {
-			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
-			break;
-		}
-		rotateCounterClockwise(s, board);
-		break;
-	case GameConfig::eKeys::DROP:
-	case GameConfig::eKeys::DROP_CAP:
-		dropShape(s, board);
-		break;
-	case GameConfig::eKeys::ESC:
-		break;
-	case GameConfig::eKeys::RIGHT:
-	case GameConfig::eKeys::RIGHT_CAP:
-		moveShapeToTheRight(s, direction, board);
-		break;
-	case GameConfig::eKeys::LEFT:
-	case GameConfig::eKeys::LEFT_CAP:
-		moveShapeToTheLeft(s, direction, board);
-		break;
-	default:
-		moveShapeDown(s, direction, board);
-		break;
-	}
-	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
-	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
-	{
-		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-		for (int i = 0; i < 4; i++)
+		//eraseShape(board.getLeft(), GameConfig::MIN_Y);
+		//switch (direction)
+		//{
+		//case 0: //LEFT
+		//	moveShapeToTheLeft(s, GameConfig::eKeys::LEFT, board);
+		//	break;
+		//case 1:
+		//	moveShapeToTheRight(s, GameConfig::eKeys::RIGHT, board);
+		//	break;
+		//	
+		//case 2:
+		//	if (s.id == 'O') {
+		//		moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+		//		break;
+		//	}
+		//	rotateClockwise(s, board);
+		//	break;
+		//case 3:
+		//	if (s.id == 'O') {
+		//		moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+		//		break;
+		//	}
+		//	rotateCounterClockwise(s, board);
+		//	break;
+		//case 4:
+		//	dropShape(s, board);
+		//	break;
+		//case 27:
+		//	break;
+		//default:
+		//	moveShapeDown(s, GameConfig::eKeys::DOWN , board);
+		//	break;
+		//}
+		drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
+		if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
 		{
-			activeX = s.body[i].getX();
-			activeY = s.body[i].getY();
-			board.matrix[activeY - 1][activeX - 1] = '#';
+			eraseShape(board.getLeft(), GameConfig::MIN_Y);
+			for (int i = 0; i < 4; i++)
+			{
+				activeX = s.body[i].getX();
+				activeY = s.body[i].getY();
+				board.matrix[activeY - 1][activeX - 1] = '#';
+			}
+			board.DrawBoard();
+			board.clearFullLines();
 		}
-		board.DrawBoard();
-		board.clearFullLines();
-	}
 }
+//void Shape::move(GameConfig::eKeys direction, Shape& s, Board& board)
+//{
+//	int activeX, activeY;
+//	eraseShape(board.getLeft(), GameConfig::MIN_Y);
+//	switch (direction)
+//	{
+//	case GameConfig::eKeys::ROTATE:
+//	case GameConfig::eKeys::ROTATE_CAP:
+//		if (s.id == 'O') {
+//			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+//			break;
+//		}
+//		rotateClockwise(s, board);
+//		break;
+//	case GameConfig::eKeys::CROTATE:
+//	case GameConfig::eKeys::CROTATE_CAP:
+//		if (s.id == 'O') {
+//			moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+//			break;
+//		}
+//		rotateCounterClockwise(s, board);
+//		break;
+//	case GameConfig::eKeys::DROP:
+//	case GameConfig::eKeys::DROP_CAP:
+//		dropShape(s, board);
+//		break;
+//	case GameConfig::eKeys::ESC:
+//		break;
+//	case GameConfig::eKeys::RIGHT:
+//	case GameConfig::eKeys::RIGHT_CAP:
+//		moveShapeToTheRight(s, direction, board);
+//		break;
+//	case GameConfig::eKeys::LEFT:
+//	case GameConfig::eKeys::LEFT_CAP:
+//		moveShapeToTheLeft(s, direction, board);
+//		break;
+//	default:
+//		moveShapeDown(s, direction, board);
+//		break;
+//	}
+//	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
+//	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
+//	{
+//		eraseShape(board.getLeft(), GameConfig::MIN_Y);
+//		for (int i = 0; i < 4; i++)
+//		{
+//			activeX = s.body[i].getX();
+//			activeY = s.body[i].getY();
+//			board.matrix[activeY - 1][activeX - 1] = '#';
+//		}
+//		board.DrawBoard();
+//		board.clearFullLines();
+//	}
+//}
 
 
 
@@ -146,7 +230,7 @@ bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1] == '#') 
+		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1] == '#')
 			return true;
 	}
 	return false;
@@ -170,7 +254,7 @@ void Shape::moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& boa
 	Shape temp = s;
 	for (int i = 0; i < 4; i++)
 	{
-		temp.body[i].movePoint(direction);
+		temp.body[i].movePoint(GameConfig::eKeys::LEFT);
 	}
 	if (!hasReachedLeftWall(s) && !hasReachedToAnotherShape(s, board) && !collidedWithAnotherShape(temp, direction, board))
 	{
@@ -201,6 +285,8 @@ void Shape::moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& bo
 
 
 void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
+	if (currentShape.id == 'O')
+		return;
 	Shape tempShape = currentShape;
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
@@ -228,6 +314,8 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 
 
 void Shape::rotateClockwise(Shape& currentShape, Board& board) {
+	if (currentShape.id == 'O')
+		return;
 	Shape tempShape = currentShape;
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
@@ -242,7 +330,7 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 	bool collided = false;
 	for (int i = 0; i < 4; i++)
 	{
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#') 
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
 		{
 			collided = true;
 		}
@@ -315,18 +403,32 @@ bool Shape::passedLeftWall(const Shape& s)
 
 void Shape::dropShape(const Shape& s, Board& board)
 {
-	// Drop the shape until it reaches the bottom of the game screen
-	while (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			body[i].draw(' ', board.getLeft(), GameConfig::MIN_Y);
+	while (!hasReachedBottom(*this) && !hasReachedToAnotherShape(*this, board)) {
+		// Erase the shape from the current position
+		eraseShape(board.getLeft(), GameConfig::MIN_Y);
+
+		// Move the shape down
+		for (int i = 0; i < 4; i++) {
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
-		for (int i = 0; i < 4; i++)
-			body[i].draw('#', board.getLeft(), GameConfig::MIN_Y);
-		Sleep(50);
+
+		// Draw the shape at the new position
+		drawShape(board.getLeft(), GameConfig::MIN_Y);
+
+		Sleep(30);
 	}
+	//// Drop the shape until it reaches the bottom of the game screen
+	//while (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
+	//{
+	//	for (int i = 0; i < 4; i++)
+	//	{
+	//		body[i].draw(' ', board.getLeft(), GameConfig::MIN_Y);
+	//		body[i].movePoint(GameConfig::eKeys::DOWN);
+	//	}
+	//	for (int i = 0; i < 4; i++)
+	//		body[i].draw('#', board.getLeft(), GameConfig::MIN_Y);
+	//	Sleep(30);
+	//}
 }
 
 
@@ -364,11 +466,11 @@ bool Shape::hasReachedLeftWall(const Shape& s)
 }
 
 
-bool Shape::isGameOver(const Shape& s ) const{
-	for (int i = 0; i <4; i++) {
+bool Shape::isGameOver(const Shape& s) const {
+	for (int i = 0; i < 4; i++) {
 		if (s.body[i].getY() == 1) {
 			gotoxy(30, 0);
-			std::cout << "game over";
+			//std::cout << "game over";
 			return true;
 		}
 	}
