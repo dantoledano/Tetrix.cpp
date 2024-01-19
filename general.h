@@ -6,8 +6,8 @@
 #include "point.h"
 #include "shape.h"
 #include "board.h"
+#include "game.h"
 
 void gotoxy(int, int);
 void clrscr();
-void drawBorder();
 char randomType();
