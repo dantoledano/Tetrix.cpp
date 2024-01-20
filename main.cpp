@@ -1,12 +1,14 @@
 #include "general.h"
 using namespace std;
 
-
+//   +=================================+
+//   |  Alicia Belhassen   319055166   |
+//   |  Dan Toledano       207254384   |
+//   +=================================+
 
 int main()
 {
 	Game game;
 	game.printMenu();
-	//game.run();
-	gotoxy(0, GameConfig::GAME_HEIGHT + GameConfig::MIN_Y + 2);
+	return 0;
 }
