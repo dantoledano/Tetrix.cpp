@@ -6,7 +6,6 @@
 class Board
 {
 	int xPos;
-	//GameConfig::eKeys keys;
 public:
 	char keys[5];
 	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
@@ -19,4 +18,5 @@ public:
 	void clearFullLines();
 	void DrawBoard();
 	void DrawCubeInBoard(int x, int y, char ch);
+	void resetBoard();
 };
