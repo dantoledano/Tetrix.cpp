@@ -15,6 +15,15 @@ Board::Board(int xPos) : xPos(xPos)
     }
 }
 
+void Board::resetBoard()
+{
+    for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
+        for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
+            matrix[i][j] = ' ';
+        }
+    }
+}
+
 
 void Board::setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey)
 {
@@ -82,7 +91,7 @@ void Board::clearFullLines() {
 
 
 void Board::DrawCubeInBoard(int x, int y, char ch) {
-    gotoxy(x + xPos, y + GameConfig::MIN_Y); ///
+    gotoxy(x + xPos, y + GameConfig::MIN_Y); 
     std::cout << ch;
 }
 
@@ -99,7 +108,6 @@ void Board::DrawBoard() {
         }
     }
 }
-
 
 
 
