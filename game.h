@@ -9,16 +9,16 @@
 using namespace std;
 
 
-
 class Game
 {
     Board board1{ GameConfig::MIN_X1 };
     Board board2{ GameConfig::MIN_X2 };
+    bool isPaused = false;
 public:
-    void run();
     Game();  // ctor - set keys
-    void gotoxy(short x, short y);
-    void drawBoard(int p);
+    bool getIsPaused() const { return this->isPaused; }
+    void setIsPaused(bool isPaused) { this->isPaused = isPaused; }
+    void run(int& choise, int& winner);
     void printMenu();
     void printInstructionsAndKeys();
     void printTableLine();
@@ -26,4 +26,8 @@ public:
     char invertToLowerCase(char ch);
     void deployShape(bool& l, bool& r, Shape& s1, Shape& s2);
     void printWinner(int num);
+    void printWinnerIs1();
+    void printWinnerIs2();
+    void printItsTie();
+    void printWelcome();
 };
