@@ -22,7 +22,7 @@ void Point::draw(char ch, int left, int top)
 
 
 void Point::movePoint(GameConfig::eKeys key)
-{
+{ // moving a single point in given direction (key).
 	switch (key)
 	{
 	case GameConfig::eKeys::LEFT:
