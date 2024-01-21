@@ -6,7 +6,7 @@ using namespace std;
 
 
 Board::Board(int xPos, int score) : xPos(xPos), score(score)
-{
+{ // initializing the board to be empty.
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
             matrix[i][j] = ' ';
@@ -14,8 +14,9 @@ Board::Board(int xPos, int score) : xPos(xPos), score(score)
     }
 }
 
+
 void Board::resetBoard()
-{
+{ // empty the board.
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
             matrix[i][j] = ' ';
@@ -57,7 +58,7 @@ void Board::drawBorder() const
 
 
 
-void Board::eraseLine(int indexLine) {
+void Board::eraseLine(int indexLine) { 
     for (int i = indexLine; i > 0; i--) {
         for (int col = 0; col < GameConfig::GAME_WIDTH; col++) {
             matrix[i][col] = matrix[i - 1][col];
@@ -110,7 +111,6 @@ void Board::DrawBoard() {
         }
     }
 }
-
 
 
 
