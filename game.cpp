@@ -6,7 +6,7 @@ const int INSTRUCTIONS_CHOICE = 8;
 const int PAUSE_CHOICE = 2;
 const int NEW_GAME_CHOICE = 1;
 
-Game::Game()
+Game::Game() // ctor- setting each playr's keys and the pace of the game
 {
 	//board1.setKeys('a', 'd', 's', 'w', 'x');
 	board1.setKeys((char)GameConfig::eKeys::LEFT, (char)GameConfig::eKeys::RIGHT,
@@ -14,11 +14,11 @@ Game::Game()
 	//board2.setKeys('j', 'l', 'k', 'i', 'm');
 	board2.setKeys((char)GameConfig::eKeys2::LEFT, (char)GameConfig::eKeys2::RIGHT,
 		(char)GameConfig::eKeys2::ROTATE, (char)GameConfig::eKeys2::CROTATE, (char)GameConfig::eKeys2::DROP);
-	pace = 700;
+	pace = 400;
 }
 
 
-void Game::printMenu() {
+void Game::printMenu() { //handling menu and end of the game.
 	int choice = 0;
 	int winner = -1;
 	while (choice != EXIT_CHOICE) {
@@ -33,18 +33,19 @@ void Game::printMenu() {
 		}
 		if (choice == NEW_GAME_CHOICE) {
 			system("cls");
-			board1.resetBoard();
+			board1.resetBoard(); 
 			board2.resetBoard();
 			board1.setScore(0);
 			board2.setScore(0);
 			run(choice, winner);
 		}
 	}
-	printWinner(winner);
+	printWinner(winner); // end of the game
 }
 
 
 void Game::run(int& choise, int& winner) {
+	// game loop:
 	board1.drawBorder();
 	board1.DrawBoard();
 	board2.drawBorder();
@@ -56,28 +57,32 @@ void Game::run(int& choise, int& winner) {
 	bool isShapeOver2 = true;
 	while (true) {
 		printScore(board1, board2);
-		deployShape(isShapeOver1, isShapeOver2, s1, s2);
+		deployShape(isShapeOver1, isShapeOver2, s1, s2); 
 		Sleep(pace);
-		char keyPressed = (char)GameConfig::eKeys::DOWN; // down
+		char keyPressed = (char)GameConfig::eKeys::DOWN; 
 		if (_kbhit())
 		{
 			keyPressed = _getch();
 			if (keyPressed == (char)GameConfig::eKeys::ESC) {
-				setIsPaused(true);
+				setIsPaused(true); // game is paused - returning to the menu
 				return;
 			}
 		}
-		keyPressed = invertToLowerCase(keyPressed);
+		keyPressed = invertToLowerCase(keyPressed); // in case of uppercase keys
+		//clearing the shape befor re-draw at new location
 		s1.eraseShape(board1.getLeft(), GameConfig::MIN_Y);
 		s2.eraseShape(board2.getLeft(), GameConfig::MIN_Y);
 		if (keyPressed == '0') {
 			s1.moveShapeDown(s1, board1);
 			s2.moveShapeDown(s2, board2);
 		}
-		checkKeyPressed(keyPressed, s1, s2);
+		// moving according to key- meaning according to the key we move the
+		// the player that obtains the key and moving down the other player.
+		checkKeyPressed(keyPressed, s1, s2); 
 		isShapeOver1 = s1.isShapeOver(s1, board1);
 		isShapeOver2 = s2.isShapeOver(s2, board2);
-		if (isShapeOver1 && isShapeOver2) {
+		if (isShapeOver1 && isShapeOver2) 
+		{ // handling shapes when there done.
 			isPlayer1Won = s2.isGameOver(s2);
 			isPlayer2Won = s1.isGameOver(s1);
 			if (isPlayer1Won && isPlayer2Won)
@@ -95,15 +100,14 @@ void Game::run(int& choise, int& winner) {
 		if (isPlayer1Won || isPlayer2Won)
 			break;
 	}
-
 	if (isPlayer1Won && isPlayer2Won) { // tie
 		winner = (board1.getScore() > board2.getScore()) ? 1 : ((board2.getScore() > board1.getScore()) ? 2 : 0);
 	}
 	else {
-		winner = (isPlayer1Won) ? 1 : 2;
+		winner = (isPlayer1Won) ? 1 : 2; // checking who won
 	}
 
-	choise = EXIT_CHOICE; // the game is over
+	choise = EXIT_CHOICE; // the player has chose to exit the game
 }
 
 
@@ -140,7 +144,8 @@ void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
 }
 
 
-char Game::invertToLowerCase(char ch) {//בודקת שהתו שנקלט חוקי בכלל ואז אם הוא אות גדולה הופכת אותו לקטנה
+char Game::invertToLowerCase(char ch) {
+	// checking if key is valid and converting to lower case.
 	for (int i = 0; i < 5; i++) {
 		if (board1.keys[i] == ch || board1.keys[i] == (ch + ('a' - 'A'))
 			|| board2.keys[i] == ch || board2.keys[i] == (ch + ('a' - 'A')))
