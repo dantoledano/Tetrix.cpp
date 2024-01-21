@@ -11,25 +11,27 @@ using namespace std;
 
 class Game
 {
-    Board board1{ GameConfig::MIN_X1 };
-    Board board2{ GameConfig::MIN_X2 };
+    Board board1{ GameConfig::MIN_X1 , 0 };
+    Board board2{ GameConfig::MIN_X2 , 0 };
     bool isPaused = false;
+    int pace;
 public:
     Game();  // ctor - set keys
     bool getIsPaused() const { return this->isPaused; }
     void setIsPaused(bool isPaused) { this->isPaused = isPaused; }
     void run(int& choise, int& winner);
     void printMenu();
-    void printInstructionsAndKeys();
-    void printTableLine();
+    void printInstructionsAndKeys() const;
+    void printTableLine() const;
     void checkKeyPressed(char keyPressed, Shape& Leftshape, Shape& RightShape);
     char invertToLowerCase(char ch);
     void deployShape(bool& l, bool& r, Shape& s1, Shape& s2);
-    void printWinner(int num);
-    void printWinnerIs1();
-    void printWinnerIs2();
-    void printItsTie();
-    void printWelcome();
-    void printGameOver();
+    void printWinner(int num) const;
+    void printWinnerIs1() const;
+    void printWinnerIs2() const;
+    void printItsTie() const;
+    void printWelcome() const;
+    void printGameOver() const;
+    void printScore(Board& board1, Board& board2) const;
 
 };
