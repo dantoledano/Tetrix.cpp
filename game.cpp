@@ -18,7 +18,7 @@ void Game::printMenu() {
 		if (choise == 8) {
 			printInstructionsAndKeys();
 		}
-		if (choise == 2) {
+		if (choise == 2 && getIsPaused()) {
 			system("cls");
 			run(choise, winner);		
 		}
@@ -36,10 +36,8 @@ void Game::printMenu() {
 void Game::run(int& choise, int& winner) {
 	board1.drawBorder();
 	board1.DrawBoard();
-	board1.setKeys('a', 'd', 's', 'w', 'x');
 	board2.drawBorder();
 	board2.DrawBoard();
-	board2.setKeys('j', 'l', 'k', 'i', 'm');
 	Shape s1, s2;
 	int direction;
 	bool isPlayer1Won = false;
@@ -90,11 +88,11 @@ void Game::run(int& choise, int& winner) {
 	}
 
 	if (isPlayer1Won && isPlayer2Won)
-		winner = 0;
+		winner = 0;  // tie
 	else if (isPlayer1Won)
-		winner = 1;
+		winner = 1;  // player 1 won
 	else
-		winner = 2;
+		winner = 2;  // player 2 won
 	choise = 9; // the game is over
 }
 
@@ -108,7 +106,7 @@ void Game::printWinner(int num) {
 	else if (num == 2)
 		printWinnerIs2();
 	else
-		cout << "bye" << endl;  // אני אסדר את זה מחר שזה יהיה נורמלי
+		printGameOver();
 }
 
 
@@ -278,15 +276,33 @@ void Game::printItsTie()
 void Game::printWelcome()
 {
 	system("cls");
-	cout << "__        __   _                             _           _____    _        _        " << endl;
-	cout << "\\ \\      / /__| | ___ ___  _ __ ___   ___   | |_ ___    |_   _|__| |_ _ __(_)___  " << endl;
-	cout << " \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\  | __/ _ \\     | |/ _ \\ __| '__| / __| " << endl;
-	cout << "  \\ V  V /  __/ | (_| (_) | | | | | |  __/  | || (_) |    | |  __/ |_| |  | \\__ \\ " << endl;
-	cout << "   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|   \\__\\___/     |_|\\___|\\__|_|  |_|___/" << endl;
+	cout << "__        __   _                             _                " << endl;
+	cout << "\\ \\      / /__| | ___ ___  _ __ ___   ___   | |_ ___        " << endl;
+	cout << " \\ \\ /\\ / / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\  | __/   \\ " << endl;
+	cout << "  \\ V  V /  __/ | (_| (_) | | | | | |  __/  | || (_) |     " << endl;
+	cout << "   \\_/\\_/ \\___|_|\\___\\___/|_| |_| |_|\\___|   \\__\\___/ \n" << endl;
+	cout << "               _       _        _     _    " << endl;
+	cout << "              | |_ ___| |_ _ __(_)___| | " << endl;
+	cout << "              | __/ _ \\ __| '__| / __| |  " << endl;
+	cout << "              | ||  __/ |_| |  | \\__ \\_|  " << endl;
+	cout << "               \\__\\___|\\__|_|  |_|___(_)   " << endl;
 	cout << "\n" << endl;
+
+
 	cout << "(1) Start a new game" << endl;
 	if(getIsPaused())
 		cout << "(2) Continue a paused game" << endl;
 	cout << "(8) Present instructions and keys" << endl;
 	cout << "(9) EXIT"<< endl;
+}
+
+
+void Game::printGameOver()
+{
+	cout << "   ____                          ___                 " << endl;
+	cout << "  / ___| __ _ _ __ ___   ___    / _ \\__   _____ _ __ " << endl;
+	cout << " | |  _ / _` | '_ ` _ \\ / _ \\  | | | \\ \\ / / _ \\ '__|" << endl;
+	cout << " | |_| | (_| | | | | | |  __/  | |_| |\\ V /  __/ |   " << endl;
+	cout << "  \\____|\\__,_|_| |_| |_|\\___|   \\___/  \\_/ \\___|_|   " << endl;
+
 }
