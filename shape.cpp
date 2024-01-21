@@ -4,6 +4,7 @@
 #include <windows.h>
 #include "general.h"
 
+const int NUM_CUBES = 4;
 
 void Shape::init(char id, Board& board)
 {
@@ -56,14 +57,14 @@ void Shape::init(char id, Board& board)
 }
 
 
-bool Shape::isShapeOver(Shape& s, Board& board) {
+bool Shape::isShapeOver(Shape& s, Board& board) const {
 	return (s.hasReachedBottom(s) || s.hasReachedToAnotherShape(s, board));
 }
 
 
 void Shape::eraseShape(int left, int top)
 {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < NUM_CUBES; i++) {
 		body[i].draw(' ', left, top);
 	}
 }
@@ -71,7 +72,7 @@ void Shape::eraseShape(int left, int top)
 
 void Shape::drawShape(int left, int top)
 {
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < NUM_CUBES; i++) {
 		body[i].draw('#', left, top);
 	}
 }
@@ -79,27 +80,30 @@ void Shape::drawShape(int left, int top)
 
 void Shape::move(Shape& s, Board& board) { //int direction,
 	int activeX, activeY;
-
+	int completedLine=0;
 	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
 	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
 	{
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_CUBES; i++)
 		{
 			activeX = s.body[i].getX();
 			activeY = s.body[i].getY();
 			board.matrix[activeY - 1][activeX - 1] = '#';
 		}
 		board.DrawBoard();
-		board.clearFullLines();
+		completedLine = board.clearFullLines();
+		board.score += (completedLine * 100);
+		if(completedLine>1)
+		   board.score *= completedLine; //for combos
 	}
 }
 
 
 
-bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board)
+bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1] == '#')
 		{
@@ -110,9 +114,9 @@ bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction
 }
 
 
-bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board)
+bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1] == '#')
 			return true;
@@ -125,7 +129,7 @@ void Shape::moveShapeDown(const Shape& s, GameConfig::eKeys direction, Board& bo
 {
 	if (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_CUBES; i++)
 		{
 			body[i].movePoint(direction);
 		}
@@ -136,7 +140,7 @@ void Shape::moveShapeDown(const Shape& s, GameConfig::eKeys direction, Board& bo
 void Shape::moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& board)
 {
 	Shape temp = s;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		temp.body[i].movePoint(GameConfig::eKeys::LEFT);
 	}
@@ -153,7 +157,7 @@ void Shape::moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& boa
 void Shape::moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& board)
 {
 	Shape temp = s;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		temp.body[i].movePoint(direction);
 	}
@@ -177,7 +181,7 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < NUM_CUBES; ++i) {
 		int relativeX = tempShape.body[i].getX() - pivotX;
 		int relativeY = tempShape.body[i].getY() - pivotY;
 		// Perform 90-degree counterclockwise rotation
@@ -185,7 +189,7 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 		tempShape.body[i].setY(pivotY - relativeX);
 	}
 	bool collided = false;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
 		{
@@ -208,7 +212,7 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
 
-	for (int i = 0; i < 4; ++i) {
+	for (int i = 0; i < NUM_CUBES; ++i) {
 		int relativeX = tempShape.body[i].getX() - pivotX;
 		int relativeY = tempShape.body[i].getY() - pivotY;
 		// Perform 90-degree counterclockwise rotation
@@ -216,7 +220,7 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 		tempShape.body[i].setY(pivotY + relativeX);
 	}
 	bool collided = false;
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
 		{
@@ -234,21 +238,21 @@ void Shape::correctLocationOfShape(const Shape& s)
 {
 	while (passedRightWall(s))
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_CUBES; i++)
 		{
 			body[i].movePoint(GameConfig::eKeys::LEFT);
 		}
 	}
 	while (passedLeftWall(s))
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_CUBES; i++)
 		{
 			body[i].movePoint(GameConfig::eKeys::RIGHT);
 		}
 	}
 	while (passedUpperWall(s))
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < NUM_CUBES; i++)
 		{
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
@@ -256,9 +260,9 @@ void Shape::correctLocationOfShape(const Shape& s)
 }
 
 
-bool Shape::passedUpperWall(const Shape& s)
+bool Shape::passedUpperWall(const Shape& s) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getY() < 1)
 			return true;
@@ -267,9 +271,9 @@ bool Shape::passedUpperWall(const Shape& s)
 }
 
 
-bool Shape::passedRightWall(const Shape& s)
+bool Shape::passedRightWall(const Shape& s) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getX() > GameConfig::GAME_WIDTH)
 			return true;
@@ -278,9 +282,9 @@ bool Shape::passedRightWall(const Shape& s)
 }
 
 
-bool Shape::passedLeftWall(const Shape& s)
+bool Shape::passedLeftWall(const Shape& s) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getX() < 1)
 			return true;
@@ -295,20 +299,19 @@ void Shape::dropShape(const Shape& s, Board& board)
 		// Erase the shape from the current position
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		// Move the shape down
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < NUM_CUBES; i++) {
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
 		// Draw the shape at the new position
 		drawShape(board.getLeft(), GameConfig::MIN_Y);
-		//Sleep(30);
 	}
 }
 
 
-bool Shape::hasReachedBottom(const Shape& s)
+bool Shape::hasReachedBottom(const Shape& s) const
 {
 	// Check if any part of the shape has reached the bottom of the game screen
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getY() == GameConfig::GAME_HEIGHT)
 			return true;
@@ -317,9 +320,9 @@ bool Shape::hasReachedBottom(const Shape& s)
 }
 
 
-bool Shape::hasReachedRightWall(const Shape& s)
+bool Shape::hasReachedRightWall(const Shape& s) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getX() >= GameConfig::GAME_WIDTH)
 			return true;
@@ -328,9 +331,9 @@ bool Shape::hasReachedRightWall(const Shape& s)
 }
 
 
-bool Shape::hasReachedLeftWall(const Shape& s)
+bool Shape::hasReachedLeftWall(const Shape& s) const
 {
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (body[i].getX() <= 1)
 			return true;
@@ -340,8 +343,8 @@ bool Shape::hasReachedLeftWall(const Shape& s)
 
 
 bool Shape::isGameOver(const Shape& s) const {
-	for (int i = 0; i < 4; i++) {
-		if (s.body[i].getY() == 1) 
+	for (int i = 0; i < NUM_CUBES; i++) {
+		if (s.body[i].getY() == 1)
 			return true;
 	}
 	return false;
