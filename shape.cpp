@@ -80,7 +80,7 @@ void Shape::drawShape(int left, int top)
 
 void Shape::move(Shape& s, Board& board) { //int direction,
 	int activeX, activeY;
-	int completedLine=0;
+	int completedLine = 0;
 	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
 	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
 	{
@@ -93,16 +93,15 @@ void Shape::move(Shape& s, Board& board) { //int direction,
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
-		board.setScore(board.getScore() + (completedLine * 100)); 
+		board.setScore(board.getScore() + (completedLine * 100));
 		if (completedLine > 1)
 			board.setScore(board.getScore() + (completedLine * 50)); //for combos
-		   //board.score *= completedLine; //for combos
 	}
 }
 
 
 
-bool Shape::collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board) const
+bool Shape::collidedWithAnotherShape(const Shape& s, Board& board) const
 {
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
@@ -126,48 +125,48 @@ bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board) const
 }
 
 
-void Shape::moveShapeDown(const Shape& s, GameConfig::eKeys direction, Board& board)
+void Shape::moveShapeDown(const Shape& s, Board& board)
 {
 	if (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
 	{
 		for (int i = 0; i < NUM_CUBES; i++)
 		{
-			body[i].movePoint(direction);
+			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
 	}
 }
 
 
-void Shape::moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& board)
+void Shape::moveShapeToTheLeft(Shape& s, Board& board)
 {
 	Shape temp = s;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		temp.body[i].movePoint(GameConfig::eKeys::LEFT);
 	}
-	if (!hasReachedLeftWall(s) && !hasReachedToAnotherShape(s, board) && !collidedWithAnotherShape(temp, direction, board))
+	if (!hasReachedLeftWall(s) && !hasReachedToAnotherShape(s, board) && !collidedWithAnotherShape(temp, board))
 	{
 		s = temp;
 	}
 	else {
-		moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+		moveShapeDown(s, board);
 	}
 }
 
 
-void Shape::moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& board)
+void Shape::moveShapeToTheRight(Shape& s, Board& board)
 {
 	Shape temp = s;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		temp.body[i].movePoint(direction);
+		temp.body[i].movePoint(GameConfig::eKeys::RIGHT);
 	}
-	if (!hasReachedRightWall(s) && !hasReachedToAnotherShape(s, board) && !collidedWithAnotherShape(temp, direction, board))
+	if (!hasReachedRightWall(s) && !hasReachedToAnotherShape(s, board) && !collidedWithAnotherShape(temp, board))
 	{
 		s = temp;
 	}
 	else {
-		moveShapeDown(s, GameConfig::eKeys::DOWN, board);
+		moveShapeDown(s, board);
 	}
 
 }
@@ -175,7 +174,7 @@ void Shape::moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& bo
 
 void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 	if (currentShape.id == 'O') {
-		moveShapeDown(currentShape, GameConfig::eKeys::DOWN, board);
+		moveShapeDown(currentShape, board);
 		return;
 	}
 	Shape tempShape = currentShape;
@@ -206,7 +205,7 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 
 void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 	if (currentShape.id == 'O') {
-		moveShapeDown(currentShape, GameConfig::eKeys::DOWN, board);
+		moveShapeDown(currentShape, board);
 		return;
 	}
 	Shape tempShape = currentShape;
