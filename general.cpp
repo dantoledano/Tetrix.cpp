@@ -19,7 +19,7 @@ void gotoxy(int x, int y)
 
 
 void clrscr()
-{
+{ // clear the screen
 	system("cls");
 }
 
