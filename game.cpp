@@ -1,32 +1,43 @@
 #include "game.h"
 using namespace std;
 
+const int EXIT_CHOICE = 9;
+const int INSTRUCTIONS_CHOICE = 8;
+const int PAUSE_CHOICE = 2;
+const int NEW_GAME_CHOICE = 1;
 
 Game::Game()
 {
-	board1.setKeys('a', 'd', 's', 'w', 'x');
-	board2.setKeys('j', 'l', 'k', 'i', 'm');
+	//board1.setKeys('a', 'd', 's', 'w', 'x');
+	board1.setKeys((char)GameConfig::eKeys::LEFT, (char)GameConfig::eKeys::RIGHT,
+		(char)GameConfig::eKeys::ROTATE, (char)GameConfig::eKeys::CROTATE,(char)GameConfig::eKeys::DROP);
+	//board2.setKeys('j', 'l', 'k', 'i', 'm');
+	board2.setKeys((char)GameConfig::eKeys2::LEFT, (char)GameConfig::eKeys2::RIGHT,
+		(char)GameConfig::eKeys2::ROTATE, (char)GameConfig::eKeys2::CROTATE, (char)GameConfig::eKeys2::DROP);
+	pace = 400;
 }
 
 
 void Game::printMenu() {
-	int choise = 0;
+	int choice = 0;
 	int winner = -1;
-	while (choise != 9) {
+	while (choice != EXIT_CHOICE) {
 		printWelcome();
-		cin >> choise;
-		if (choise == 8) {
+		cin >> choice;
+		if (choice == INSTRUCTIONS_CHOICE) {
 			printInstructionsAndKeys();
 		}
-		if (choise == 2 && getIsPaused()) {
+		if (choice == PAUSE_CHOICE && getIsPaused()) {
 			system("cls");
-			run(choise, winner);		
+			run(choice, winner);
 		}
-		if (choise == 1){
+		if (choice == NEW_GAME_CHOICE) {
 			system("cls");
 			board1.resetBoard();
 			board2.resetBoard();
-			run(choise, winner);
+			board1.score = 0;
+			board2.score = 0;
+			run(choice, winner);
 		}
 	}
 	printWinner(winner);
@@ -44,18 +55,18 @@ void Game::run(int& choise, int& winner) {
 	bool isPlayer2Won = false;
 	bool isShapeOver1 = true;
 	bool isShapeOver2 = true;
-
 	while (true) {
+		printScore(board1, board2);
 		deployShape(isShapeOver1, isShapeOver2, s1, s2);
-		Sleep(500);
-		char keyPressed = 'z'; // down
+		Sleep(pace);
+		char keyPressed = (char)GameConfig::eKeys::DOWN; // down
 		if (_kbhit())
 		{
 			keyPressed = _getch();
-			if (keyPressed == (int)GameConfig::eKeys::ESC) {
+			if (keyPressed == (char)GameConfig::eKeys::ESC) {
 				setIsPaused(true);
 				return;
-			}		
+			}
 		}
 		keyPressed = invertToLowerCase(keyPressed);
 		s1.eraseShape(board1.getLeft(), GameConfig::MIN_Y);
@@ -70,9 +81,8 @@ void Game::run(int& choise, int& winner) {
 		if (isShapeOver1 && isShapeOver2) {
 			isPlayer1Won = s2.isGameOver(s2);
 			isPlayer2Won = s1.isGameOver(s1);
-			if (isPlayer1Won && isPlayer2Won) {
+			if (isPlayer1Won && isPlayer2Won) 
 				break;
-			}
 			continue;
 		}
 		else if (isShapeOver1) {
@@ -86,18 +96,30 @@ void Game::run(int& choise, int& winner) {
 		if (isPlayer1Won || isPlayer2Won)
 			break;
 	}
+	if (isPlayer1Won && isPlayer2Won) { // tie
+		winner = (board1.score > board2.score) ? 1 : ((board2.score > board1.score) ? 2 : 0);
+	}
+	else {
+		winner = (isPlayer1Won) ? 1 : 2;
+	}
 
-	if (isPlayer1Won && isPlayer2Won)
-		winner = 0;  // tie
-	else if (isPlayer1Won)
-		winner = 1;  // player 1 won
-	else
-		winner = 2;  // player 2 won
-	choise = 9; // the game is over
+	//if (isPlayer1Won && isPlayer2Won) {//tie
+	//	if (board1.score > board2.score) //according to the scores
+	//		winner = 1;
+	//	else if (board2.score > board1.score)
+	//		winner = 2;
+	//	else
+	//	winner = 0;  // tie
+	//}
+	//else if (isPlayer1Won)
+	//	winner = 1;  // player 1 won
+	//else
+	//	winner = 2;  // player 2 won
+	choise = EXIT_CHOICE; // the game is over
 }
 
 
-void Game::printWinner(int num) {
+void Game::printWinner(int num) const {
 	system("cls");
 	if (num == 0)
 		printItsTie();
@@ -109,7 +131,12 @@ void Game::printWinner(int num) {
 		printGameOver();
 }
 
-
+void Game::printScore(Board& board1, Board& board2) const {
+	gotoxy(10, 0);
+	cout << "Player's 1 score is: " << board1.score;
+	gotoxy(40, 0);
+	cout << "Player's 2 score is: " << board2.score;
+}
 
 void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
 	if (l) {
@@ -140,48 +167,59 @@ char Game::invertToLowerCase(char ch) {//בודקת שהתו שנקלט חוקי
 
 void Game::checkKeyPressed(char keyPressed, Shape& LeftShape, Shape& RightShape) {
 	switch (keyPressed) {
-	case 'z':
+	//case 'z':
+	case (char)GameConfig::eKeys::DOWN:
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		break;
-	case 'a':
+	//case 'a':
+	case (char)GameConfig::eKeys::LEFT:
 		LeftShape.moveShapeToTheLeft(LeftShape, GameConfig::eKeys::LEFT, board1);
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		break;
-	case 'd':
+	//case 'd':
+	case (char)GameConfig::eKeys::RIGHT:
 		LeftShape.moveShapeToTheRight(LeftShape, GameConfig::eKeys::RIGHT, board1);
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		break;
-	case 's':
+	//case 's':
+	case (char)GameConfig::eKeys::ROTATE:
 		LeftShape.rotateClockwise(LeftShape, board1);
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		break;
-	case 'w':
+	//case 'w':
+	case (char)GameConfig::eKeys::CROTATE:
 		LeftShape.rotateCounterClockwise(LeftShape, board1);
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		break;
-	case 'x':
+	//case 'x':
+	case (char)GameConfig::eKeys::DROP:
 		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
 		RightShape.move(RightShape, board2);
 		LeftShape.dropShape(LeftShape, board1);
 		break;
-	case 'j':
+	//case 'j':
+	case (char)GameConfig::eKeys2::LEFT:
 		RightShape.moveShapeToTheLeft(RightShape, GameConfig::eKeys::LEFT, board2);
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		break;
-	case 'l':
+	//case 'l':
+	case (char)GameConfig::eKeys2::RIGHT:
 		RightShape.moveShapeToTheRight(RightShape, GameConfig::eKeys::RIGHT, board2);
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		break;
-	case 'k':
+	//case 'k':
+	case (char)GameConfig::eKeys2::ROTATE:
 		RightShape.rotateClockwise(RightShape, board2);
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		break;
-	case 'i':
+	//case 'i':
+	case (char)GameConfig::eKeys2::CROTATE:
 		RightShape.rotateCounterClockwise(RightShape, board2);
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		break;
-	case 'm':
+	//case 'm':
+	case (char)GameConfig::eKeys2::DROP:
 		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
 		LeftShape.move(LeftShape, board1);
 		RightShape.dropShape(RightShape, board2);
@@ -195,7 +233,7 @@ void Game::checkKeyPressed(char keyPressed, Shape& LeftShape, Shape& RightShape)
 }
 
 
-void Game::printInstructionsAndKeys() {
+void Game::printInstructionsAndKeys() const {
 	system("cls");
 	cout << "In Tetris, you must arrange a sequence of small shapes into complete lines." << endl
 		<< "As each line is completed, it will disappear from the screen." << endl
@@ -224,12 +262,12 @@ void Game::printInstructionsAndKeys() {
 }
 
 
-void Game::printTableLine() {
+void Game::printTableLine() const {
 	cout << "---------------------------------------------------------\n";
 }
 
 
-void Game::printWinnerIs1()
+void Game::printWinnerIs1() const
 {
 	cout << " ____  _                           _   " << endl;
 	cout << "|  _ \\| | __ _ _   _  ___ _ __    / | " << endl;
@@ -246,7 +284,7 @@ void Game::printWinnerIs1()
 }
 
 
-void Game::printWinnerIs2()
+void Game::printWinnerIs2() const
 {
 	cout << " ____  _                          ____  " << endl;
 	cout << "|  _ \\| | __ _ _   _  ___ _ __   |___ \\  " << endl;
@@ -263,7 +301,7 @@ void Game::printWinnerIs2()
 }
 
 
-void Game::printItsTie()
+void Game::printItsTie() const
 {
 	cout << "    ___ _   _                 _   _      _  " << endl;
 	cout << "   |_ _| |_( )___     __ _   | |_(_) ___| | " << endl;
@@ -273,7 +311,7 @@ void Game::printItsTie()
 }
 
 
-void Game::printWelcome()
+void Game::printWelcome() const
 {
 	system("cls");
 	cout << "__        __   _                             _                " << endl;
@@ -290,14 +328,14 @@ void Game::printWelcome()
 
 
 	cout << "(1) Start a new game" << endl;
-	if(getIsPaused())
+	if (getIsPaused())
 		cout << "(2) Continue a paused game" << endl;
 	cout << "(8) Present instructions and keys" << endl;
-	cout << "(9) EXIT"<< endl;
+	cout << "(9) EXIT" << endl;
 }
 
 
-void Game::printGameOver()
+void Game::printGameOver() const
 {
 	cout << "   ____                          ___                 " << endl;
 	cout << "  / ___| __ _ _ __ ___   ___    / _ \\__   _____ _ __ " << endl;
