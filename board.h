@@ -6,9 +6,11 @@
 class Board
 {
 	int xPos;
+	int score;
 public:
 	Board(int xPos, int score); //ctor - set xPos of player
-	int score;
+	int getScore() const { return this-> score; }
+	void setScore(const int& score_) { score = score_; }
 	char keys[5];
 	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
 	void setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey);
