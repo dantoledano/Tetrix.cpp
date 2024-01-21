@@ -1,12 +1,11 @@
 #include "board.h"
 #include "point.h"
 #include "general.h"
-#include <Windows.h>
 #include "gameConfig.h"
 using namespace std;
 
 
-Board::Board(int xPos) : xPos(xPos)
+Board::Board(int xPos, int score) : xPos(xPos), score(score)
 {
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
@@ -35,7 +34,7 @@ void Board::setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey
 }
 
 
-void Board::drawBorder()
+void Board::drawBorder() const
 {
     for (int col = xPos; col < GameConfig::GAME_WIDTH + xPos; col++)
     {
@@ -80,19 +79,22 @@ bool Board::isFullLine(int line) const {
 }
 
 
-void Board::clearFullLines() {
+int Board::clearFullLines() {
+    int combo = 0;
     for (int i = 0; i < GameConfig::GAME_HEIGHT; i++) {
         if (isFullLine(i)) {
             eraseLine(i);
             DrawBoard();
+            combo++;
         }
     }
+    return combo;
 }
 
 
 void Board::DrawCubeInBoard(int x, int y, char ch) {
-    gotoxy(x + xPos, y + GameConfig::MIN_Y); 
-    std::cout << ch;
+    gotoxy(x + xPos, y + GameConfig::MIN_Y);
+    cout << ch;
 }
 
 
@@ -108,7 +110,6 @@ void Board::DrawBoard() {
         }
     }
 }
-
 
 
 
