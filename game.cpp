@@ -10,11 +10,11 @@ Game::Game()
 {
 	//board1.setKeys('a', 'd', 's', 'w', 'x');
 	board1.setKeys((char)GameConfig::eKeys::LEFT, (char)GameConfig::eKeys::RIGHT,
-		(char)GameConfig::eKeys::ROTATE, (char)GameConfig::eKeys::CROTATE,(char)GameConfig::eKeys::DROP);
+		(char)GameConfig::eKeys::ROTATE, (char)GameConfig::eKeys::CROTATE, (char)GameConfig::eKeys::DROP);
 	//board2.setKeys('j', 'l', 'k', 'i', 'm');
 	board2.setKeys((char)GameConfig::eKeys2::LEFT, (char)GameConfig::eKeys2::RIGHT,
 		(char)GameConfig::eKeys2::ROTATE, (char)GameConfig::eKeys2::CROTATE, (char)GameConfig::eKeys2::DROP);
-	pace = 400;
+	pace = 700;
 }
 
 
@@ -50,7 +50,6 @@ void Game::run(int& choise, int& winner) {
 	board2.drawBorder();
 	board2.DrawBoard();
 	Shape s1, s2;
-	int direction;
 	bool isPlayer1Won = false;
 	bool isPlayer2Won = false;
 	bool isShapeOver1 = true;
@@ -72,8 +71,8 @@ void Game::run(int& choise, int& winner) {
 		s1.eraseShape(board1.getLeft(), GameConfig::MIN_Y);
 		s2.eraseShape(board2.getLeft(), GameConfig::MIN_Y);
 		if (keyPressed == '0') {
-			s1.moveShapeDown(s1, GameConfig::eKeys::DOWN, board1);
-			s2.moveShapeDown(s2, GameConfig::eKeys::DOWN, board2);
+			s1.moveShapeDown(s1, board1);
+			s2.moveShapeDown(s2, board2);
 		}
 		checkKeyPressed(keyPressed, s1, s2);
 		isShapeOver1 = s1.isShapeOver(s1, board1);
@@ -81,7 +80,7 @@ void Game::run(int& choise, int& winner) {
 		if (isShapeOver1 && isShapeOver2) {
 			isPlayer1Won = s2.isGameOver(s2);
 			isPlayer2Won = s1.isGameOver(s1);
-			if (isPlayer1Won && isPlayer2Won) 
+			if (isPlayer1Won && isPlayer2Won)
 				break;
 			continue;
 		}
@@ -96,6 +95,7 @@ void Game::run(int& choise, int& winner) {
 		if (isPlayer1Won || isPlayer2Won)
 			break;
 	}
+
 	if (isPlayer1Won && isPlayer2Won) { // tie
 		winner = (board1.getScore() > board2.getScore()) ? 1 : ((board2.getScore() > board1.getScore()) ? 2 : 0);
 	}
@@ -103,18 +103,6 @@ void Game::run(int& choise, int& winner) {
 		winner = (isPlayer1Won) ? 1 : 2;
 	}
 
-	//if (isPlayer1Won && isPlayer2Won) {//tie
-	//	if (board1.score > board2.score) //according to the scores
-	//		winner = 1;
-	//	else if (board2.score > board1.score)
-	//		winner = 2;
-	//	else
-	//	winner = 0;  // tie
-	//}
-	//else if (isPlayer1Won)
-	//	winner = 1;  // player 1 won
-	//else
-	//	winner = 2;  // player 2 won
 	choise = EXIT_CHOICE; // the game is over
 }
 
@@ -131,12 +119,14 @@ void Game::printWinner(int num) const {
 		printGameOver();
 }
 
+
 void Game::printScore(Board& board1, Board& board2) const {
 	gotoxy(10, 0);
 	cout << "Player's 1 score is: " << board1.getScore();
 	gotoxy(40, 0);
 	cout << "Player's 2 score is: " << board2.getScore();
 }
+
 
 void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
 	if (l) {
@@ -167,60 +157,60 @@ char Game::invertToLowerCase(char ch) {//בודקת שהתו שנקלט חוקי
 
 void Game::checkKeyPressed(char keyPressed, Shape& LeftShape, Shape& RightShape) {
 	switch (keyPressed) {
-	//case 'z':
+		//case 'z':
 	case (char)GameConfig::eKeys::DOWN:
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		LeftShape.moveShapeDown(LeftShape, board1);
+		RightShape.moveShapeDown(RightShape, board2);
 		break;
-	//case 'a':
+		//case 'a':
 	case (char)GameConfig::eKeys::LEFT:
-		LeftShape.moveShapeToTheLeft(LeftShape, GameConfig::eKeys::LEFT, board1);
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		LeftShape.moveShapeToTheLeft(LeftShape, board1);
+		RightShape.moveShapeDown(RightShape, board2);
 		break;
-	//case 'd':
+		//case 'd':
 	case (char)GameConfig::eKeys::RIGHT:
-		LeftShape.moveShapeToTheRight(LeftShape, GameConfig::eKeys::RIGHT, board1);
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		LeftShape.moveShapeToTheRight(LeftShape, board1);
+		RightShape.moveShapeDown(RightShape, board2);
 		break;
-	//case 's':
+		//case 's':
 	case (char)GameConfig::eKeys::ROTATE:
 		LeftShape.rotateClockwise(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		RightShape.moveShapeDown(RightShape, board2);
 		break;
-	//case 'w':
+		//case 'w':
 	case (char)GameConfig::eKeys::CROTATE:
 		LeftShape.rotateCounterClockwise(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		RightShape.moveShapeDown(RightShape, board2);
 		break;
-	//case 'x':
+		//case 'x':
 	case (char)GameConfig::eKeys::DROP:
-		RightShape.moveShapeDown(RightShape, GameConfig::eKeys::DOWN, board2);
+		RightShape.moveShapeDown(RightShape, board2);
 		RightShape.move(RightShape, board2);
 		LeftShape.dropShape(LeftShape, board1);
 		break;
-	//case 'j':
+		//case 'j':
 	case (char)GameConfig::eKeys2::LEFT:
-		RightShape.moveShapeToTheLeft(RightShape, GameConfig::eKeys::LEFT, board2);
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
+		RightShape.moveShapeToTheLeft(RightShape, board2);
+		LeftShape.moveShapeDown(LeftShape, board1);
 		break;
-	//case 'l':
+		//case 'l':
 	case (char)GameConfig::eKeys2::RIGHT:
-		RightShape.moveShapeToTheRight(RightShape, GameConfig::eKeys::RIGHT, board2);
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
+		RightShape.moveShapeToTheRight(RightShape, board2);
+		LeftShape.moveShapeDown(LeftShape, board1);
 		break;
-	//case 'k':
+		//case 'k':
 	case (char)GameConfig::eKeys2::ROTATE:
 		RightShape.rotateClockwise(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
+		LeftShape.moveShapeDown(LeftShape, board1);
 		break;
-	//case 'i':
+		//case 'i':
 	case (char)GameConfig::eKeys2::CROTATE:
 		RightShape.rotateCounterClockwise(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
+		LeftShape.moveShapeDown(LeftShape, board1);
 		break;
-	//case 'm':
+		//case 'm':
 	case (char)GameConfig::eKeys2::DROP:
-		LeftShape.moveShapeDown(LeftShape, GameConfig::eKeys::DOWN, board1);
+		LeftShape.moveShapeDown(LeftShape, board1);
 		LeftShape.move(LeftShape, board1);
 		RightShape.dropShape(RightShape, board2);
 		break;
