@@ -35,8 +35,8 @@ void Game::printMenu() {
 			system("cls");
 			board1.resetBoard();
 			board2.resetBoard();
-			board1.score = 0;
-			board2.score = 0;
+			board1.setScore(0);
+			board2.setScore(0);
 			run(choice, winner);
 		}
 	}
@@ -97,7 +97,7 @@ void Game::run(int& choise, int& winner) {
 			break;
 	}
 	if (isPlayer1Won && isPlayer2Won) { // tie
-		winner = (board1.score > board2.score) ? 1 : ((board2.score > board1.score) ? 2 : 0);
+		winner = (board1.getScore() > board2.getScore()) ? 1 : ((board2.getScore() > board1.getScore()) ? 2 : 0);
 	}
 	else {
 		winner = (isPlayer1Won) ? 1 : 2;
@@ -133,9 +133,9 @@ void Game::printWinner(int num) const {
 
 void Game::printScore(Board& board1, Board& board2) const {
 	gotoxy(10, 0);
-	cout << "Player's 1 score is: " << board1.score;
+	cout << "Player's 1 score is: " << board1.getScore();
 	gotoxy(40, 0);
-	cout << "Player's 2 score is: " << board2.score;
+	cout << "Player's 2 score is: " << board2.getScore();
 }
 
 void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
