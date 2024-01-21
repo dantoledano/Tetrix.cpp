@@ -30,4 +30,6 @@ public:
     void printWinnerIs2();
     void printItsTie();
     void printWelcome();
+    void printGameOver();
+
 };
