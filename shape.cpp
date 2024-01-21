@@ -93,9 +93,10 @@ void Shape::move(Shape& s, Board& board) { //int direction,
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
-		board.score += (completedLine * 100);
-		if(completedLine>1)
-		   board.score *= completedLine; //for combos
+		board.setScore(board.getScore() + (completedLine * 100)); 
+		if (completedLine > 1)
+			board.setScore(board.getScore() + (completedLine * 50)); //for combos
+		   //board.score *= completedLine; //for combos
 	}
 }
 
