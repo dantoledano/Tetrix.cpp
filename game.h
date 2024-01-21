@@ -16,7 +16,7 @@ class Game
     bool isPaused = false;
     int pace;
 public:
-    Game();  // ctor - set keys
+    Game();  // ctor - set keys, score
     bool getIsPaused() const { return this->isPaused; }
     void setIsPaused(bool isPaused) { this->isPaused = isPaused; }
     void run(int& choise, int& winner);
@@ -33,5 +33,4 @@ public:
     void printWelcome() const;
     void printGameOver() const;
     void printScore(Board& board1, Board& board2) const;
-
 };
