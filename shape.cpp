@@ -7,7 +7,7 @@
 const int NUM_CUBES = 4;
 
 void Shape::init(char id, Board& board)
-{
+{// init position of shape at the top of the board
 	this->id = id;
 	switch (id) {
 	case 'I':
@@ -58,6 +58,8 @@ void Shape::init(char id, Board& board)
 
 
 bool Shape::isShapeOver(Shape& s, Board& board) const {
+	// if the shape reached the bottom or landed on another shape
+	// it means this current shape has finished it's job.
 	return (s.hasReachedBottom(s) || s.hasReachedToAnotherShape(s, board));
 }
 
@@ -78,18 +80,19 @@ void Shape::drawShape(int left, int top)
 }
 
 
-void Shape::move(Shape& s, Board& board) { //int direction,
+void Shape::move(Shape& s, Board& board) {
 	int activeX, activeY;
 	int completedLine = 0;
-	drawShape(board.getLeft(), GameConfig::MIN_Y);  // re-drawing of the shape at new location
-	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  // update matrix
-	{
+	// re-drawing of the shape at new location
+	drawShape(board.getLeft(), GameConfig::MIN_Y);  
+	if (hasReachedBottom(s) || hasReachedToAnotherShape(s, board))  
+	{// update matrix
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		for (int i = 0; i < NUM_CUBES; i++)
-		{
+		{// enter shape in to matrix
 			activeX = s.body[i].getX();
 			activeY = s.body[i].getY();
-			board.matrix[activeY - 1][activeX - 1] = '#';
+			board.matrix[activeY - 1][activeX - 1] = '#'; 
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
@@ -102,7 +105,8 @@ void Shape::move(Shape& s, Board& board) { //int direction,
 
 
 bool Shape::collidedWithAnotherShape(const Shape& s, Board& board) const
-{
+{   // if the shape is supposed to move to a location where there already
+	// is another shape (even a part of it) we rule out the move.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[s.body[i].getY() - 1][s.body[i].getX() - 1] == '#')
@@ -115,7 +119,9 @@ bool Shape::collidedWithAnotherShape(const Shape& s, Board& board) const
 
 
 bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board) const
-{
+{   // if at a certain point, the shape reaches to another shape
+	// meaning it's just above the one under it we stop the shape 
+	// from progressing any further.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
 		if (board.matrix[s.body[i].getY()][s.body[i].getX() - 1] == '#')
@@ -126,7 +132,8 @@ bool Shape::hasReachedToAnotherShape(const Shape& s, Board& board) const
 
 
 void Shape::moveShapeDown(const Shape& s, Board& board)
-{
+{// taking the shape one step down as long as it didnt reached the
+ // bottom and didnt reach another shape - meaning the move is valid.
 	if (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
 	{
 		for (int i = 0; i < NUM_CUBES; i++)
@@ -138,7 +145,9 @@ void Shape::moveShapeDown(const Shape& s, Board& board)
 
 
 void Shape::moveShapeToTheLeft(Shape& s, Board& board)
-{
+{// taking the shape one step to the left as long as it didnt reached the
+ // wall, didnt reach another shape and didnt collid with another shape-
+ // meaning the move is valid. for in valid moves we *try* to move the shape down.
 	Shape temp = s;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
@@ -155,7 +164,9 @@ void Shape::moveShapeToTheLeft(Shape& s, Board& board)
 
 
 void Shape::moveShapeToTheRight(Shape& s, Board& board)
-{
+{// taking the shape one step to the right as long as it didnt reached the
+ // wall, didnt reach another shape and didnt collid with another shape-
+ // meaning the move is valid. for in valid moves we *try* to move the shape down.
 	Shape temp = s;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
@@ -172,13 +183,19 @@ void Shape::moveShapeToTheRight(Shape& s, Board& board)
 }
 
 
-void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
+void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) 
+{// rotating the shape counter clock wise:
+ // if the shape is above another shape or if the rotation will cause 
+ // a collision - we dont allow the rotation.
+ // if the rotation is causing the shape to leave the frames of the board
+ // we push the shape back in to the board next to the wall.
 	if (currentShape.id == 'O') {
 		moveShapeDown(currentShape, board);
 		return;
 	}
 	Shape tempShape = currentShape;
-	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
+	// Assuming the first cube is the center of the shape
+	int pivotX = tempShape.body[1].getX();
 	int pivotY = tempShape.body[1].getY();
 
 	for (int i = 0; i < NUM_CUBES; ++i) {
@@ -203,13 +220,19 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 }
 
 
-void Shape::rotateClockwise(Shape& currentShape, Board& board) {
+void Shape::rotateClockwise(Shape& currentShape, Board& board) 
+{// rotating the shape clock wise:
+ // if the shape is above another shape or if the rotation will cause 
+ // a collision - we dont allow the rotation.
+ // if the rotation is causing the shape to leave the frames of the board
+ // we push the shape back in to the board next to the wall.
 	if (currentShape.id == 'O') {
 		moveShapeDown(currentShape, board);
 		return;
 	}
 	Shape tempShape = currentShape;
-	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
+	// Assuming the first cube is the center of the shape
+	int pivotX = tempShape.body[1].getX();
 	int pivotY = tempShape.body[1].getY();
 
 	for (int i = 0; i < NUM_CUBES; ++i) {
@@ -235,7 +258,8 @@ void Shape::rotateClockwise(Shape& currentShape, Board& board) {
 
 
 void Shape::correctLocationOfShape(const Shape& s)
-{
+{// after rotation, if needed the function pushes the shape back 
+ // in to the board next to the wall.
 	while (passedRightWall(s))
 	{
 		for (int i = 0; i < NUM_CUBES; i++)
