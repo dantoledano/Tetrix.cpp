@@ -22,11 +22,11 @@ public:
 	void correctLocationOfShape(const Shape& s);
 	void drawShape(int left, int top);
 	void eraseShape(int left, int top);
-	void moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& board);
-	void moveShapeToTheLeft(Shape& s, GameConfig::eKeys direction, Board& board);
-	void moveShapeDown(const Shape& s, GameConfig::eKeys direction, Board& board);
+	void moveShapeToTheRight(Shape& s, Board& board);
+	void moveShapeToTheLeft(Shape& s, Board& board);
+	void moveShapeDown(const Shape& s, Board& board);
 	bool hasReachedToAnotherShape(const Shape& s, Board& board) const;
-	bool collidedWithAnotherShape(const Shape& s, GameConfig::eKeys direction, Board& board) const;
+	bool collidedWithAnotherShape(const Shape& s, Board& board) const;
 	bool isGameOver(const Shape& s) const;
 	bool isShapeOver(Shape& s, Board& board) const;
 };
