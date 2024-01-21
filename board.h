@@ -7,9 +7,9 @@ class Board
 {
 	int xPos;
 public:
+	Board(int xPos); //ctor - set xPos of player
 	char keys[5];
 	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
-	Board(int xPos); //ctor
 	void setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey);
 	int getLeft() { return xPos; }
 	void drawBorder();
