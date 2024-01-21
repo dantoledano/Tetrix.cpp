@@ -169,8 +169,10 @@ void Shape::moveShapeToTheRight(Shape& s, GameConfig::eKeys direction, Board& bo
 
 
 void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
-	if (currentShape.id == 'O')
+	if (currentShape.id == 'O') {
+		moveShapeDown(currentShape, GameConfig::eKeys::DOWN, board);
 		return;
+	}
 	Shape tempShape = currentShape;
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
@@ -198,8 +200,10 @@ void Shape::rotateCounterClockwise(Shape& currentShape, Board& board) {
 
 
 void Shape::rotateClockwise(Shape& currentShape, Board& board) {
-	if (currentShape.id == 'O')
+	if (currentShape.id == 'O') {
+		moveShapeDown(currentShape, GameConfig::eKeys::DOWN, board);
 		return;
+	}
 	Shape tempShape = currentShape;
 	int pivotX = tempShape.body[1].getX();// Assuming the first cube is the center of the shape
 	int pivotY = tempShape.body[1].getY();
@@ -290,29 +294,14 @@ void Shape::dropShape(const Shape& s, Board& board)
 	while (!hasReachedBottom(*this) && !hasReachedToAnotherShape(*this, board)) {
 		// Erase the shape from the current position
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-
 		// Move the shape down
 		for (int i = 0; i < 4; i++) {
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
-
 		// Draw the shape at the new position
 		drawShape(board.getLeft(), GameConfig::MIN_Y);
-
-		Sleep(30);
+		//Sleep(30);
 	}
-	//// Drop the shape until it reaches the bottom of the game screen
-	//while (!hasReachedBottom(s) && !hasReachedToAnotherShape(s, board))
-	//{
-	//	for (int i = 0; i < 4; i++)
-	//	{
-	//		body[i].draw(' ', board.getLeft(), GameConfig::MIN_Y);
-	//		body[i].movePoint(GameConfig::eKeys::DOWN);
-	//	}
-	//	for (int i = 0; i < 4; i++)
-	//		body[i].draw('#', board.getLeft(), GameConfig::MIN_Y);
-	//	Sleep(30);
-	//}
 }
 
 
@@ -352,9 +341,8 @@ bool Shape::hasReachedLeftWall(const Shape& s)
 
 bool Shape::isGameOver(const Shape& s) const {
 	for (int i = 0; i < 4; i++) {
-		if (s.body[i].getY() == 1) {
+		if (s.body[i].getY() == 1) 
 			return true;
-		}
 	}
 	return false;
 }
