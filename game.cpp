@@ -33,7 +33,7 @@ void Game::printMenu() { //handling menu and end of the game.
 		}
 		if (choice == NEW_GAME_CHOICE) {
 			system("cls");
-			board1.resetBoard(); 
+			board1.resetBoard();
 			board2.resetBoard();
 			board1.setScore(0);
 			board2.setScore(0);
@@ -44,8 +44,7 @@ void Game::printMenu() { //handling menu and end of the game.
 }
 
 
-void Game::run(int& choise, int& winner) {
-	// game loop:
+void Game::run(int& choise, int& winner) {// game loop:
 	board1.drawBorder();
 	board1.DrawBoard();
 	board2.drawBorder();
@@ -57,14 +56,14 @@ void Game::run(int& choise, int& winner) {
 	bool isShapeOver2 = true;
 	while (true) {
 		printScore(board1, board2);
-		deployShape(isShapeOver1, isShapeOver2, s1, s2); 
+		deployShape(isShapeOver1, isShapeOver2, s1, s2);
 		Sleep(pace);
-		char keyPressed = (char)GameConfig::eKeys::DOWN; 
+		char keyPressed = (char)GameConfig::eKeys::DOWN;
 		if (_kbhit())
 		{
 			keyPressed = _getch();
 			if (keyPressed == (char)GameConfig::eKeys::ESC) {
-				setIsPaused(true); // game is paused - returning to the menu
+				setIsPaused(true); // game is paused - returning to the menu 
 				return;
 			}
 		}
@@ -72,29 +71,30 @@ void Game::run(int& choise, int& winner) {
 		//clearing the shape befor re-draw at new location
 		s1.eraseShape(board1.getLeft(), GameConfig::MIN_Y);
 		s2.eraseShape(board2.getLeft(), GameConfig::MIN_Y);
+
 		if (keyPressed == '0') {
-			s1.moveShapeDown(s1, board1);
-			s2.moveShapeDown(s2, board2);
+			s1.moveShapeDown(board1);
+			s2.moveShapeDown(board2);
 		}
 		// moving according to key- meaning according to the key we move the
-		// the player that obtains the key and moving down the other player.
-		checkKeyPressed(keyPressed, s1, s2); 
-		isShapeOver1 = s1.isShapeOver(s1, board1);
-		isShapeOver2 = s2.isShapeOver(s2, board2);
-		if (isShapeOver1 && isShapeOver2) 
+		// player that obtains the key and moving down the other player.
+		checkKeyPressed(keyPressed, s1, s2);
+		isShapeOver1 = s1.isShapeOver(board1);
+		isShapeOver2 = s2.isShapeOver(board2);
+		if (isShapeOver1 && isShapeOver2)
 		{ // handling shapes when there done.
-			isPlayer1Won = s2.isGameOver(s2);
-			isPlayer2Won = s1.isGameOver(s1);
+			isPlayer1Won = s2.isGameOver();
+			isPlayer2Won = s1.isGameOver();
 			if (isPlayer1Won && isPlayer2Won)
 				break;
 			continue;
 		}
 		else if (isShapeOver1) {
-			isPlayer2Won = s1.isGameOver(s1);
+			isPlayer2Won = s1.isGameOver();
 			s1.init(randomType(), board1);
 		}
 		else if (isShapeOver2) {
-			isPlayer1Won = s2.isGameOver(s2);
+			isPlayer1Won = s2.isGameOver();
 			s2.init(randomType(), board2);
 		}
 		if (isPlayer1Won || isPlayer2Won)
@@ -106,7 +106,6 @@ void Game::run(int& choise, int& winner) {
 	else {
 		winner = (isPlayer1Won) ? 1 : 2; // checking who won
 	}
-
 	choise = EXIT_CHOICE; // the player has chose to exit the game
 }
 
@@ -164,66 +163,66 @@ void Game::checkKeyPressed(char keyPressed, Shape& LeftShape, Shape& RightShape)
 	switch (keyPressed) {
 		//case 'z':
 	case (char)GameConfig::eKeys::DOWN:
-		LeftShape.moveShapeDown(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, board2);
+		LeftShape.moveShapeDown(board1);
+		RightShape.moveShapeDown(board2);
 		break;
 		//case 'a':
 	case (char)GameConfig::eKeys::LEFT:
-		LeftShape.moveShapeToTheLeft(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, board2);
+		LeftShape.moveShapeToTheLeft(board1);
+		RightShape.moveShapeDown(board2);
 		break;
 		//case 'd':
 	case (char)GameConfig::eKeys::RIGHT:
-		LeftShape.moveShapeToTheRight(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, board2);
+		LeftShape.moveShapeToTheRight(board1);
+		RightShape.moveShapeDown(board2);
 		break;
 		//case 's':
 	case (char)GameConfig::eKeys::ROTATE:
-		LeftShape.rotateClockwise(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, board2);
+		LeftShape.rotateClockwise(board1);
+		RightShape.moveShapeDown(board2);
 		break;
 		//case 'w':
 	case (char)GameConfig::eKeys::CROTATE:
-		LeftShape.rotateCounterClockwise(LeftShape, board1);
-		RightShape.moveShapeDown(RightShape, board2);
+		LeftShape.rotateCounterClockwise(board1);
+		RightShape.moveShapeDown(board2);
 		break;
 		//case 'x':
 	case (char)GameConfig::eKeys::DROP:
-		RightShape.moveShapeDown(RightShape, board2);
-		RightShape.move(RightShape, board2);
-		LeftShape.dropShape(LeftShape, board1);
+		RightShape.moveShapeDown(board2);
+		RightShape.move(board2);
+		LeftShape.dropShape(board1);
 		break;
 		//case 'j':
 	case (char)GameConfig::eKeys2::LEFT:
-		RightShape.moveShapeToTheLeft(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, board1);
+		RightShape.moveShapeToTheLeft(board2);
+		LeftShape.moveShapeDown(board1);
 		break;
 		//case 'l':
 	case (char)GameConfig::eKeys2::RIGHT:
-		RightShape.moveShapeToTheRight(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, board1);
+		RightShape.moveShapeToTheRight(board2);
+		LeftShape.moveShapeDown(board1);
 		break;
 		//case 'k':
 	case (char)GameConfig::eKeys2::ROTATE:
-		RightShape.rotateClockwise(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, board1);
+		RightShape.rotateClockwise(board2);
+		LeftShape.moveShapeDown(board1);
 		break;
 		//case 'i':
 	case (char)GameConfig::eKeys2::CROTATE:
-		RightShape.rotateCounterClockwise(RightShape, board2);
-		LeftShape.moveShapeDown(LeftShape, board1);
+		RightShape.rotateCounterClockwise(board2);
+		LeftShape.moveShapeDown(board1);
 		break;
 		//case 'm':
 	case (char)GameConfig::eKeys2::DROP:
-		LeftShape.moveShapeDown(LeftShape, board1);
-		LeftShape.move(LeftShape, board1);
-		RightShape.dropShape(RightShape, board2);
+		LeftShape.moveShapeDown(board1);
+		LeftShape.move(board1);
+		RightShape.dropShape(board2);
 		break;
 	default:
 		break;
 	}
-	LeftShape.move(LeftShape, board1);
-	RightShape.move(RightShape, board2);
+	LeftShape.move(board1);
+	RightShape.move(board2);
 
 }
 
@@ -337,5 +336,4 @@ void Game::printGameOver() const
 	cout << " | |  _ / _` | '_ ` _ \\ / _ \\  | | | \\ \\ / / _ \\ '__|" << endl;
 	cout << " | |_| | (_| | | | | | |  __/  | |_| |\\ V /  __/ |   " << endl;
 	cout << "  \\____|\\__,_|_| |_| |_|\\___|   \\___/  \\_/ \\___|_|   " << endl;
-
 }
