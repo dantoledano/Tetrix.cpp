@@ -14,7 +14,7 @@ Game::Game() // ctor- setting each playr's keys and the pace of the game
 	//board2.setKeys('j', 'l', 'k', 'i', 'm');
 	board2.setKeys((char)GameConfig::eKeys2::LEFT, (char)GameConfig::eKeys2::RIGHT,
 		(char)GameConfig::eKeys2::ROTATE, (char)GameConfig::eKeys2::CROTATE, (char)GameConfig::eKeys2::DROP);
-	pace = 400;
+	pace = 700;
 }
 
 
@@ -79,8 +79,18 @@ void Game::run(int& choise, int& winner) {// game loop:
 		// moving according to key- meaning according to the key we move the
 		// player that obtains the key and moving down the other player.
 		checkKeyPressed(keyPressed, s1, s2);
-		isShapeOver1 = s1.isShapeOver(board1);
-		isShapeOver2 = s2.isShapeOver(board2);
+		if (s1.getHasExploaded()) {
+			isShapeOver1 = true;
+			s1.setHasExploaded(false);
+		}
+		else
+			isShapeOver1 = s1.isShapeOver(board1);
+		if (s2.getHasExploaded()) {
+			isShapeOver2 = true;
+			s2.setHasExploaded(false);
+		}
+		else
+			isShapeOver2 = s2.isShapeOver(board2);
 		if (isShapeOver1 && isShapeOver2)
 		{ // handling shapes when there done.
 			isPlayer1Won = s2.isGameOver();
