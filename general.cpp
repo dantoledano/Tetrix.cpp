@@ -19,18 +19,47 @@ void gotoxy(int x, int y)
 
 
 void clrscr()
-{ // clear the screen
+{ // clear the screen 
 	system("cls");
 }
 
 
-char randomType() { 
+//char randomType() {  // הרנדום המקורי
+//	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+//	// Array of characters
+//	char types[] = { 'L', 'J', 'O', 'I', 'S', 'Z', 'T', '@'};
+//	// Calculate the number of characters in the array
+//	int numOfTypes = 8;
+//	// Generate a random index
+//	int randomIndex = std::rand() % numOfTypes;
+//	return types[randomIndex];
+//}
+
+
+char randomType() {
 	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 	// Array of characters
-	char types[] = { 'L', 'J', 'O', 'I', 'S', 'Z', 'T' };
+	//char types[] = { 'L', 'J', 'O', 'I', 'S', 'Z', 'T' };
+	char types[] = { 'L', '@' };
 	// Calculate the number of characters in the array
-	int numOfTypes = 7;
+	int numOfTypes = 2;
 	// Generate a random index
 	int randomIndex = std::rand() % numOfTypes;
 	return types[randomIndex];
 }
+
+
+//char randomType() {  // אל תמחק, לא בטוחה אם זה טוב אבל זה אמור לשמש אותנו להמשך
+//	std::srand(static_cast<unsigned int>(std::time(nullptr)));
+//	int isTimeForBomb = std::rand() % 100;
+//	if (isTimeForBomb < 95) {
+//		// Array of characters
+//		char types[] = { 'L', 'J', 'O', 'I', 'S', 'Z', 'T' };
+//		// Calculate the number of characters in the array
+//		int numOfTypes = 7;
+//		// Generate a random index
+//		int randomIndex = std::rand() % numOfTypes;
+//		return types[randomIndex];
+//	}
+//	return BOMB;
+//}
