@@ -7,7 +7,10 @@ class Shape
 private:
 	char id;
 	Point body[4];
+	bool hasExploaded = false;
 public:
+	int getHasExploaded() const { return this->hasExploaded; }
+	void setHasExploaded(bool hasExploaded) { this->hasExploaded = hasExploaded; }
 	void init(char id, Board& board);
 	void move(Board& board);
 	void rotateCounterClockwise(Board& board);
