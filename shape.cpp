@@ -52,6 +52,9 @@ void Shape::init(char id, Board& board)
 		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 3);
 		body[3].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 3);
 		break;
+	default: // '@' BOMB
+		for (int i = 0; i < NUM_CUBES; i++)
+			body[i].initPoint((GameConfig::GAME_WIDTH / 2), 1);
 	}
 	drawShape(board.getLeft(), GameConfig::MIN_Y);
 }
@@ -67,15 +70,22 @@ bool Shape::isShapeOver(Board& board) const {
 void Shape::eraseShape(int left, int top)
 {
 	for (int i = 0; i < NUM_CUBES; i++) {
-		body[i].draw(' ', left, top);
+		body[i].draw(GameConfig::SPACE, left, top);
 	}
 }
 
 
 void Shape::drawShape(int left, int top)
-{
-	for (int i = 0; i < NUM_CUBES; i++) {
-		body[i].draw('#', left, top);
+{// TO DO
+	if (id == GameConfig::BOMB) {
+		for (int i = 0; i < NUM_CUBES; i++) {
+			body[i].draw(GameConfig::BOMB, left, top);
+		}
+	}
+	else { 
+		for (int i = 0; i < NUM_CUBES; i++) {
+			body[i].draw(GameConfig::BLOCK, left, top);
+		}
 	}
 }
 
@@ -88,11 +98,19 @@ void Shape::move(Board& board) {
 	if (hasReachedBottom() || hasReachedToAnotherShape(board))
 	{// update matrix
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-		for (int i = 0; i < NUM_CUBES; i++)
-		{// enter shape in to matrix
-			activeX = body[i].getX();
-			activeY = body[i].getY();
-			board.matrix[activeY - 1][activeX - 1] = '#';
+		if (id == GameConfig::BOMB) {
+			board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			board.DrawBoard();  // בדיקה
+			setHasExploaded(true);
+			board.organizeBoard();
+		}
+		else {
+			for (int i = 0; i < NUM_CUBES; i++)
+			{// enter shape in to matrix
+				activeX = body[i].getX()-1;
+				activeY = body[i].getY()-1;
+				board.matrix[activeY][activeX] = GameConfig::BLOCK;
+			}
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
@@ -190,7 +208,7 @@ void Shape::rotateCounterClockwise(Board& board)
  // a collision - we dont allow the rotation.
  // if the rotation is causing the shape to leave the frames of the board
  // we push the shape back in to the board next to the wall.
-	if (this->id == 'O') {
+	if (this->id == 'O' || id== GameConfig::BOMB) {
 		moveShapeDown(board);
 		return;
 	}
@@ -209,7 +227,7 @@ void Shape::rotateCounterClockwise(Board& board)
 	bool collided = false;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
 		{
 			collided = true;
 		}
@@ -227,7 +245,7 @@ void Shape::rotateClockwise(Board& board)
  // a collision - we dont allow the rotation.
  // if the rotation is causing the shape to leave the frames of the board
  // we push the shape back in to the board next to the wall.
-	if (this->id == 'O') {
+	if (this->id == 'O' || id == GameConfig::BOMB) {
 		moveShapeDown(board);
 		return;
 	}
@@ -246,7 +264,7 @@ void Shape::rotateClockwise(Board& board)
 	bool collided = false;
 	for (int i = 0; i < NUM_CUBES; i++)
 	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == '#')
+		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
 		{
 			collided = true;
 		}
