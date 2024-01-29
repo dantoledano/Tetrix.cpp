@@ -9,7 +9,7 @@ Board::Board(int xPos, int score) : xPos(xPos), score(score)
 { // initializing the board to be empty.
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
-            matrix[i][j] = ' ';
+            matrix[i][j] = GameConfig::SPACE;
         }
     }
 }
@@ -19,7 +19,7 @@ void Board::resetBoard()
 { // empty the board.
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
-            matrix[i][j] = ' ';
+            matrix[i][j] = GameConfig::SPACE;
         }
     }
 }
@@ -62,18 +62,17 @@ void Board::eraseLine(int indexLine) {
     for (int i = indexLine; i > 0; i--) {
         for (int col = 0; col < GameConfig::GAME_WIDTH; col++) {
             matrix[i][col] = matrix[i - 1][col];
-
         }
     }
     for (int col = 0; col < GameConfig::GAME_WIDTH; col++) {
-        matrix[0][col] = ' ';
+        matrix[0][col] = GameConfig::SPACE;
     }
 }
 
 
 bool Board::isFullLine(int line) const {
     for (int i = 0; i < GameConfig::GAME_WIDTH; i++) {
-        if (matrix[line][i] == ' ')
+        if (matrix[line][i] == GameConfig::SPACE)
             return false;
     }
     return true;
@@ -92,6 +91,23 @@ int Board::clearFullLines() {
     return combo;
 }
 
+void Board::organizeBoard()
+{
+    for (int i = GameConfig::GAME_HEIGHT-2; i >= 0; i--) {
+        for (int j = GameConfig::GAME_WIDTH-1; j >= 0; j--){
+            int count = 0;
+            while ((matrix[i+count][j] == GameConfig::BLOCK) && (matrix[i+1+count][j] == GameConfig::SPACE)) {
+                matrix[i+count][j] = GameConfig::SPACE;
+                matrix[i+1+count][j] = GameConfig::BLOCK;
+                count++;
+                if (i + 1 + count > GameConfig::GAME_HEIGHT-1)
+                    break;  // end of board
+            }
+        }
+    }
+}
+
+
 
 void Board::DrawCubeInBoard(int x, int y, char ch) {
     gotoxy(x + xPos, y + GameConfig::MIN_Y);
@@ -102,8 +118,8 @@ void Board::DrawCubeInBoard(int x, int y, char ch) {
 void Board::DrawBoard() {
     for (int i = GameConfig::GAME_HEIGHT - 1; i >= 0; i--) {
         for (int j = 0; j < GameConfig::GAME_WIDTH; j++) {
-            if (matrix[i][j] == '#') {
-                DrawCubeInBoard(j, i, '#');
+            if (matrix[i][j] == GameConfig::BLOCK) {
+                DrawCubeInBoard(j, i, GameConfig::BLOCK);
             }
             else {
                 DrawCubeInBoard(j, i, ' ');
@@ -111,6 +127,32 @@ void Board::DrawBoard() {
         }
     }
 }
+
+
+void Board::expload(int activeX, int activeY)
+{
+    int count = 1;
+    while (count < 5 && (activeX + count <= GameConfig::GAME_WIDTH)) { // right
+        matrix[activeY][activeX + count] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5 && (activeX - count >= 1)) { // left
+        matrix[activeY][activeX - count] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5 && (activeY + count <= GameConfig::GAME_HEIGHT)) { // down
+        matrix[activeY + count][activeX] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5 && (activeY - count <= 1)) { // up
+        matrix[activeY - count][activeX] = GameConfig::SPACE;
+        count++;
+    }
+}
+
 
 
 
