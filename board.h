@@ -22,4 +22,6 @@ public:
 	void DrawBoard();
 	void DrawCubeInBoard(int x, int y, char ch);
 	void resetBoard();
+	void expload(int activeX, int activeY);
+	void organizeBoard();
 };
