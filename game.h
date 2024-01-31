@@ -16,6 +16,11 @@ class Game
     bool isPaused = false;
     int pace;
 public:
+    static constexpr int EXIT_CHOICE = 9;
+    static constexpr int INSTRUCTIONS_CHOICE = 8;
+    static constexpr int PAUSE_CHOICE = 2;
+    static constexpr int NEW_GAME_CHOICE = 1;
+    static constexpr int PACE = 500;
     Game();  // ctor - set keys, score
     bool getIsPaused() const { return this->isPaused; }
     void setIsPaused(bool isPaused) { this->isPaused = isPaused; }
