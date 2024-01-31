@@ -1,396 +1,175 @@
-#include "shape.h"
+#include "board.h"
 #include "point.h"
-#include "gameConfig.h"
-#include <windows.h>
 #include "general.h"
+#include "gameConfig.h"
+using namespace std;
 
-const int NUM_CUBES = 4;
 
-void Shape::init(char id, Board& board)
-{// init position of shape at the top of the board
-	this->id = id;
-	switch (id) {
-	case 'I':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 2, 1);
-		break;
-	case 'O':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 2);
-		break;
-	case 'S':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 2);
-		break;
-	case 'Z':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 2);
-		break;
-	case 'T':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 1);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		break;
-	case 'L':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 3);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) + 1, 3);
-		break;
-	case 'J':
-		body[0].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-		body[1].initPoint((GameConfig::GAME_WIDTH / 2), 2);
-		body[2].initPoint((GameConfig::GAME_WIDTH / 2), 3);
-		body[3].initPoint((GameConfig::GAME_WIDTH / 2) - 1, 3);
-		break;
-	default: // '@' BOMB
-		for (int i = 0; i < NUM_CUBES; i++)
-			body[i].initPoint((GameConfig::GAME_WIDTH / 2), 1);
-	}
-	drawShape(board.getLeft(), GameConfig::MIN_Y);
+Board::Board(int xPos, int score) : xPos(xPos), score(score)
+{ // initializing the board to be empty.
+    for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
+        for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
+            matrix[i][j] = GameConfig::SPACE;
+        }
+    }
 }
 
 
-bool Shape::isShapeOver(Board& board) const {
-	// if the shape reached the bottom or landed on another shape
-	// it means this current shape has finished it's job.
-	return (hasReachedBottom() || hasReachedToAnotherShape(board));
+void Board::resetBoard()
+{ // empty the board.
+    for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
+        for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
+            matrix[i][j] = GameConfig::SPACE;
+        }
+    }
+   // setFooAt(0, 0, '*');
 }
 
 
-void Shape::eraseShape(int left, int top)
+void Board::setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey)
 {
-	for (int i = 0; i < NUM_CUBES; i++) {
-		body[i].draw(GameConfig::SPACE, left, top);
-	}
+    this->keys[0] = leftKey;
+    this->keys[1] = rightKey;
+    this->keys[2] = rotateKey;
+    this->keys[3] = crotateKey;
+    this->keys[4] = dropKey;
 }
 
 
-void Shape::drawShape(int left, int top)
+void Board::drawBorder() const
 {
-	//if (id == GameConfig::BOMB) {
-	//	for (int i = 0; i < NUM_CUBES; i++) {
-	//		body[i].draw(GameConfig::BOMB, left, top);
-	//	}
-	//}
-	if (id == GameConfig::BOMB) 
-		body[0].draw(GameConfig::BOMB, left, top);
+    for (int col = xPos; col < GameConfig::GAME_WIDTH + xPos; col++)
+    {
+        gotoxy(col, GameConfig::MIN_Y - 1);
+        cout << "-";
 
-	else { 
-		for (int i = 0; i < NUM_CUBES; i++) {
-			body[i].draw(GameConfig::BLOCK, left, top);
-		}
-	}
-}
+        gotoxy(col, GameConfig::GAME_HEIGHT + GameConfig::MIN_Y);
+        cout << "-";
+    }
 
+    for (int row = GameConfig::MIN_Y - 1; row <= GameConfig::GAME_HEIGHT + GameConfig::MIN_Y; row++)
+    {
+        gotoxy(xPos - 1, row);
+        cout << "|";
 
-void Shape::move(Board& board) {
-	int activeX, activeY;
-	int completedLine = 0;
-	// re-drawing of the shape at new location
-	drawShape(board.getLeft(), GameConfig::MIN_Y);
-	if (hasReachedBottom() || hasReachedToAnotherShape(board))
-	{// update matrix
-		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-		if (id == GameConfig::BOMB) {
-			board.expload(body[0].getX() - 1, body[0].getY() - 1);
-			setHasExploaded(true);
-			board.organizeBoard();
-		}
-		else {
-			for (int i = 0; i < NUM_CUBES; i++)
-			{// enter shape in to matrix
-				activeX = body[i].getX()-1;
-				activeY = body[i].getY()-1;
-				board.matrix[activeY][activeX] = GameConfig::BLOCK;
-			}
-		}
-		board.DrawBoard();
-		completedLine = board.clearFullLines();
-		board.setScore(board.getScore() + (completedLine * 100));
-		if (completedLine > 1)
-			board.setScore(board.getScore() + (completedLine * 50)); //for combos
-	}
+        gotoxy(GameConfig::GAME_WIDTH + xPos, row);
+        cout << "|";
+    }
 }
 
 
 
-bool Shape::collidedWithAnotherShape(Board& board) const
-{   // if the shape is supposed to move to a location where there already
-	// is another shape (even a part of it) we rule out the move.
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (board.matrix[body[i].getY() - 1][body[i].getX() - 1] == '#')
-		{
-			return true;
-		}
-	}
-	return false;
+void Board::eraseLine(int indexLine) { 
+    for (int i = indexLine; i > 0; i--) {
+        for (int col = 0; col < GameConfig::GAME_WIDTH; col++) {
+            matrix[i][col] = matrix[i - 1][col];
+        }
+    }
+    for (int col = 0; col < GameConfig::GAME_WIDTH; col++) {
+        matrix[0][col] = GameConfig::SPACE;
+    }
 }
 
 
-bool Shape::hasReachedToAnotherShape(Board& board) const
-{   // if at a certain point, the shape reaches to another shape
-	// meaning it's just above the one under it we stop the shape 
-	// from progressing any further.
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (board.matrix[body[i].getY()][body[i].getX() - 1] == '#')
-			return true;
-	}
-	return false;
+bool Board::isFullLine(int line) const {
+    for (int i = 0; i < GameConfig::GAME_WIDTH; i++) {
+        if (matrix[line][i] == GameConfig::SPACE)
+            return false;
+    }
+    return true;
 }
 
 
-void Shape::moveShapeDown(Board& board)
-{// taking the shape one step down as long as it didnt reached the
- // bottom and didnt reach another shape - meaning the move is valid.
-	if (!hasReachedBottom() && !hasReachedToAnotherShape(board))
-	{
-		for (int i = 0; i < NUM_CUBES; i++)
-		{
-			body[i].movePoint(GameConfig::eKeys::DOWN);
-		}
-	}
+int Board::clearFullLines() {
+    int combo = 0;
+    for (int i = 0; i < GameConfig::GAME_HEIGHT; i++) {
+        if (isFullLine(i)) {
+            eraseLine(i);
+            DrawBoard();
+            combo++;
+        }
+    }
+    return combo;
 }
 
-
-void Shape::moveShapeToTheLeft(Board& board)
-{// taking the shape one step to the left as long as it didnt reached the
- // wall, didnt reach another shape and didnt collid with another shape-
- // meaning the move is valid. for in valid moves we *try* to move the shape down.
-	Shape temp = *this;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		temp.body[i].movePoint(GameConfig::eKeys::LEFT);
-	}
-	if (!hasReachedLeftWall() && !hasReachedToAnotherShape(board) && !temp.collidedWithAnotherShape(board))
-	{
-		*this = temp;
-	}
-	else {
-		moveShapeDown(board);
-	}
-}
-
-
-
-void Shape::moveShapeToTheRight(Board& board)
-{// taking the shape one step to the right as long as it didnt reached the
- // wall, didnt reach another shape and didnt collid with another shape-
- // meaning the move is valid. for in valid moves we *try* to move the shape down.
-	Shape temp = *this;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		temp.body[i].movePoint(GameConfig::eKeys::RIGHT);
-	}
-	if (!hasReachedRightWall() && !hasReachedToAnotherShape(board) && !temp.collidedWithAnotherShape(board))
-	{
-		*this = temp;
-	}
-	else {
-		moveShapeDown(board);
-	}
-}
-
-
-
-void Shape::rotateCounterClockwise(Board& board)
-{// rotating the shape counter clock wise:
- // if the shape is above another shape or if the rotation will cause 
- // a collision - we dont allow the rotation.
- // if the rotation is causing the shape to leave the frames of the board
- // we push the shape back in to the board next to the wall.
-	if (this->id == 'O' || id== GameConfig::BOMB) {
-		moveShapeDown(board);
-		return;
-	}
-	Shape tempShape = *this;
-	// Assuming the first cube is the center of the shape
-	int pivotX = tempShape.body[1].getX();
-	int pivotY = tempShape.body[1].getY();
-
-	for (int i = 0; i < NUM_CUBES; ++i)
-	{// Perform 90-degree counterclockwise rotation
-		int relativeX = tempShape.body[i].getX() - pivotX;
-		int relativeY = tempShape.body[i].getY() - pivotY;
-		tempShape.body[i].setX(pivotX + relativeY);
-		tempShape.body[i].setY(pivotY - relativeX);
-	}
-	bool collided = false;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
-		{
-			collided = true;
-		}
-	}
-	if (!tempShape.hasReachedToAnotherShape(board) && !collided) {
-		*this = tempShape; // applaying the rotation only if the move is valid
-	}
-	correctLocationOfShape();  // in case of deviation
-}
-
-
-void Shape::rotateClockwise(Board& board)
-{// rotating the shape clock wise:
- // if the shape is above another shape or if the rotation will cause 
- // a collision - we dont allow the rotation.
- // if the rotation is causing the shape to leave the frames of the board
- // we push the shape back in to the board next to the wall.
-	if (this->id == 'O' || id == GameConfig::BOMB) {
-		moveShapeDown(board);
-		return;
-	}
-	Shape tempShape = *this;
-	// Assuming the first cube is the center of the shape
-	int pivotX = tempShape.body[1].getX();
-	int pivotY = tempShape.body[1].getY();
-
-	for (int i = 0; i < NUM_CUBES; ++i)
-	{// Perform 90-degree counterclockwise rotation
-		int relativeX = tempShape.body[i].getX() - pivotX;
-		int relativeY = tempShape.body[i].getY() - pivotY;
-		tempShape.body[i].setX(pivotX - relativeY);
-		tempShape.body[i].setY(pivotY + relativeX);
-	}
-	bool collided = false;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
-		{
-			collided = true;
-		}
-	}
-	if (!tempShape.hasReachedToAnotherShape(board) && !collided) {
-		*this = tempShape; // applaying the rotation only if the move is valid
-	}
-	correctLocationOfShape(); // in case of deviation
-}
-
-
-void Shape::correctLocationOfShape()
-{// after rotation, if needed the function pushes the shape back 
- // in to the board next to the wall.
-	while (passedRightWall())
-	{
-		for (int i = 0; i < NUM_CUBES; i++)
-		{
-			body[i].movePoint(GameConfig::eKeys::LEFT);
-		}
-	}
-	while (passedLeftWall())
-	{
-		for (int i = 0; i < NUM_CUBES; i++)
-		{
-			body[i].movePoint(GameConfig::eKeys::RIGHT);
-		}
-	}
-	while (passedUpperWall())
-	{
-		for (int i = 0; i < NUM_CUBES; i++)
-		{
-			body[i].movePoint(GameConfig::eKeys::DOWN);
-		}
-	}
-}
-
-
-bool Shape::passedUpperWall() const
+void Board::organizeBoard()
 {
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getY() < 1)
-			return true;
-	}
-	return false;
+    for (int i = GameConfig::GAME_HEIGHT-2; i >= 0; i--) {
+        for (int j = GameConfig::GAME_WIDTH-1; j >= 0; j--){
+            int count = 0;
+            while ((matrix[i+count][j] == GameConfig::BLOCK) && (matrix[i+1+count][j] == GameConfig::SPACE)) {
+                matrix[i+count][j] = GameConfig::SPACE;
+                matrix[i+1+count][j] = GameConfig::BLOCK;
+                count++;
+                if (i + 1 + count > GameConfig::GAME_HEIGHT-1)
+                    break;  // end of board
+            }
+        }
+    }
 }
 
 
-bool Shape::passedRightWall() const
+
+void Board::DrawCubeInBoard(int x, int y, char ch) {
+    gotoxy(x + xPos, y + GameConfig::MIN_Y);
+    cout << ch;
+}
+
+
+void Board::DrawBoard() {
+    for (int i = GameConfig::GAME_HEIGHT - 1; i >= 0; i--) {
+        for (int j = 0; j < GameConfig::GAME_WIDTH; j++) {
+            if (matrix[i][j] == GameConfig::BLOCK) {
+                DrawCubeInBoard(j, i, GameConfig::BLOCK);
+            }
+            else {
+                DrawCubeInBoard(j, i, ' ');
+            }
+        }
+    }
+}
+
+
+void Board::expload(int activeX, int activeY)
 {
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getX() > GameConfig::GAME_WIDTH)
-			return true;
-	}
-	return false;
+    int count = 1;
+    while (count < 5) { // right
+        if (activeX + count > GameConfig::GAME_WIDTH-1)
+            break;
+        matrix[activeY][activeX + count] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5) { // left
+        if (activeX - count < 0)
+            break;
+        matrix[activeY][activeX - count] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5){ // down
+        if (activeY + count > GameConfig::GAME_HEIGHT-1)
+            break;
+        matrix[activeY + count][activeX] = GameConfig::SPACE;
+        count++;
+    }
+    count = 1;
+    while (count < 5) { // up
+        if (activeY - count < 0)
+            break;
+        matrix[activeY - count][activeX] = GameConfig::SPACE;
+        count++;
+    }
 }
 
 
-bool Shape::passedLeftWall() const
-{
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getX() < 1)
-			return true;
-	}
-	return false;
-}
 
 
-void Shape::dropShape(Board& board)
-{
-	while (!hasReachedBottom() && !hasReachedToAnotherShape(board)) {
-		// Erase the shape from the current position
-		eraseShape(board.getLeft(), GameConfig::MIN_Y);
-		// Move the shape down
-		for (int i = 0; i < NUM_CUBES; i++) {
-			body[i].movePoint(GameConfig::eKeys::DOWN);
-		}
-		// Draw the shape at the new position
-		drawShape(board.getLeft(), GameConfig::MIN_Y);
-	}
-}
 
 
-bool Shape::hasReachedBottom() const
-{
-	// Check if any part of the shape has reached the bottom of the game screen
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getY() == GameConfig::GAME_HEIGHT)
-			return true;
-	}
-	return false;
-}
 
 
-bool Shape::hasReachedRightWall() const
-{
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getX() >= GameConfig::GAME_WIDTH)
-			return true;
-	}
-	return false;
-}
 
 
-bool Shape::hasReachedLeftWall() const
-{
-	for (int i = 0; i < NUM_CUBES; i++)
-	{
-		if (body[i].getX() <= 1)
-			return true;
-	}
-	return false;
-}
 
 
-bool Shape::isGameOver() const {
-	for (int i = 0; i < NUM_CUBES; i++) {
-		if (body[i].getY() == 1)
-			return true;
-	}
-	return false;
-}
