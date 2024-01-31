@@ -76,12 +76,15 @@ void Shape::eraseShape(int left, int top)
 
 
 void Shape::drawShape(int left, int top)
-{// TO DO
-	if (id == GameConfig::BOMB) {
-		for (int i = 0; i < NUM_CUBES; i++) {
-			body[i].draw(GameConfig::BOMB, left, top);
-		}
-	}
+{
+	//if (id == GameConfig::BOMB) {
+	//	for (int i = 0; i < NUM_CUBES; i++) {
+	//		body[i].draw(GameConfig::BOMB, left, top);
+	//	}
+	//}
+	if (id == GameConfig::BOMB) 
+		body[0].draw(GameConfig::BOMB, left, top);
+
 	else { 
 		for (int i = 0; i < NUM_CUBES; i++) {
 			body[i].draw(GameConfig::BLOCK, left, top);
@@ -100,7 +103,6 @@ void Shape::move(Board& board) {
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		if (id == GameConfig::BOMB) {
 			board.expload(body[0].getX() - 1, body[0].getY() - 1);
-			board.DrawBoard();  // בדיקה
 			setHasExploaded(true);
 			board.organizeBoard();
 		}
