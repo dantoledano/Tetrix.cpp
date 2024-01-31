@@ -22,6 +22,7 @@ void Board::resetBoard()
             matrix[i][j] = GameConfig::SPACE;
         }
     }
+   // setFooAt(0, 0, '*');
 }
 
 
@@ -132,22 +133,30 @@ void Board::DrawBoard() {
 void Board::expload(int activeX, int activeY)
 {
     int count = 1;
-    while (count < 5 && (activeX + count <= GameConfig::GAME_WIDTH)) { // right
+    while (count < 5) { // right
+        if (activeX + count > GameConfig::GAME_WIDTH-1)
+            break;
         matrix[activeY][activeX + count] = GameConfig::SPACE;
         count++;
     }
     count = 1;
-    while (count < 5 && (activeX - count >= 1)) { // left
+    while (count < 5) { // left
+        if (activeX - count < 0)
+            break;
         matrix[activeY][activeX - count] = GameConfig::SPACE;
         count++;
     }
     count = 1;
-    while (count < 5 && (activeY + count <= GameConfig::GAME_HEIGHT)) { // down
+    while (count < 5){ // down
+        if (activeY + count > GameConfig::GAME_HEIGHT-1)
+            break;
         matrix[activeY + count][activeX] = GameConfig::SPACE;
         count++;
     }
     count = 1;
-    while (count < 5 && (activeY - count <= 1)) { // up
+    while (count < 5) { // up
+        if (activeY - count < 0)
+            break;
         matrix[activeY - count][activeX] = GameConfig::SPACE;
         count++;
     }
