@@ -9,6 +9,7 @@ private:
 	Point body[4];
 	bool hasExploaded = false;
 public:
+	static constexpr int NUM_CUBES = 4;
 	int getHasExploaded() const { return this->hasExploaded; }
 	void setHasExploaded(bool hasExploaded) { this->hasExploaded = hasExploaded; }
 	void init(char id, Board& board);
@@ -22,6 +23,7 @@ public:
 	bool passedLeftWall() const;
 	bool passedRightWall() const;
 	bool passedUpperWall() const;
+	bool passedLowerWall() const;
 	void correctLocationOfShape();
 	void drawShape(int left, int top);
 	void eraseShape(int left, int top);
