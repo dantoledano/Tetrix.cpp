@@ -40,6 +40,17 @@ char randomType() {
 }
 
 
+void getKeyToContinue() {
+	cout << "Press any key to continue...";
+	while (true)
+	{
+		if (_kbhit())
+		{
+			_getch(); // clean the buffer
+			return;
+		}
+	}
+}
 //char randomType() {  // הרנדום המקורי
 //	std::srand(static_cast<unsigned int>(std::time(nullptr)));
 //	// Array of characters
