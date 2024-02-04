@@ -1,10 +1,6 @@
 #include "game.h"
 using namespace std;
 
-const int EXIT_CHOICE = 9;
-const int INSTRUCTIONS_CHOICE = 8;
-const int PAUSE_CHOICE = 2;
-const int NEW_GAME_CHOICE = 1;
 
 Game::Game() // ctor- setting each playr's keys and the pace of the game
 {
@@ -14,7 +10,7 @@ Game::Game() // ctor- setting each playr's keys and the pace of the game
 	//board2.setKeys('j', 'l', 'k', 'i', 'm');
 	board2.setKeys((char)GameConfig::eKeys2::LEFT, (char)GameConfig::eKeys2::RIGHT,
 		(char)GameConfig::eKeys2::ROTATE, (char)GameConfig::eKeys2::CROTATE, (char)GameConfig::eKeys2::DROP);
-	pace = 700;
+	pace = PACE; 
 }
 
 
@@ -22,14 +18,14 @@ void Game::printMenu() { //handling menu and end of the game.
 	int choice = 0;
 	int winner = -1;
 	while (choice != EXIT_CHOICE) {
-		printWelcome();
+		printWelcome(winner);
 		cin >> choice;
 		if (choice == INSTRUCTIONS_CHOICE) {
 			printInstructionsAndKeys();
 		}
 		if (choice == PAUSE_CHOICE && getIsPaused()) {
 			system("cls");
-			run(choice, winner);
+			run(winner);
 		}
 		if (choice == NEW_GAME_CHOICE) {
 			system("cls");
@@ -37,14 +33,18 @@ void Game::printMenu() { //handling menu and end of the game.
 			board2.resetBoard();
 			board1.setScore(0);
 			board2.setScore(0);
-			run(choice, winner);
+			run(winner);
+		}
+		if (winner != -1) {
+			printWinner(winner); 
+			winner = -1; // reset winner for potentially next game
 		}
 	}
-	printWinner(winner); // end of the game
+	printGameOver(); // end of game- printing game over and ending the program
 }
 
 
-void Game::run(int& choise, int& winner) {// game loop:
+void Game::run(int& winner) {// game loop:
 	board1.drawBorder();
 	board1.DrawBoard();
 	board2.drawBorder();
@@ -107,29 +107,32 @@ void Game::run(int& choise, int& winner) {// game loop:
 			isPlayer1Won = s2.isGameOver();
 			s2.init(randomType(), board2);
 		}
-		if (isPlayer1Won || isPlayer2Won)
+		if (isPlayer1Won || isPlayer2Won) // ending game loop when someone wins
 			break;
 	}
 	if (isPlayer1Won && isPlayer2Won) { // tie
 		winner = (board1.getScore() > board2.getScore()) ? 1 : ((board2.getScore() > board1.getScore()) ? 2 : 0);
 	}
 	else {
-		winner = (isPlayer1Won) ? 1 : 2; // checking who won
+		winner = (isPlayer1Won) ? 1 : 2; // set winner
 	}
-	choise = EXIT_CHOICE; // the player has chose to exit the game
 }
 
 
 void Game::printWinner(int num) const {
 	system("cls");
-	if (num == 0)
+	if (num == 0) {
 		printItsTie();
-	else if (num == 1)
+		return;
+	}
+	else if (num == 1) {
 		printWinnerIs1();
-	else if (num == 2)
+		return;
+	}
+	else{
 		printWinnerIs2();
-	else
-		printGameOver();
+		return;
+	}
 }
 
 
@@ -254,15 +257,7 @@ void Game::printInstructionsAndKeys() const {
 	cout << "ROTATE counterClockwise |    w or W     |    i or I     | \n";
 	printTableLine();
 	cout << "DROP                    |    x or X     |    m or M     |\n\n\n";
-	cout << "press any key to continue...\n" << endl;
-	while (true)
-	{
-		if (_kbhit())
-		{
-			_getch(); // clean the buffer
-			return;
-		}
-	}
+	getKeyToContinue(); return;
 }
 
 
@@ -285,6 +280,8 @@ void Game::printWinnerIs1() const
 	cout << "| / __|  | __| '_ \\ / _ \\  \\ \\ /\\ / / | '_ \\| '_ \\ / _ \\ '__| |" << endl;
 	cout << "| \\__ \\  | |_| | | |  __/   \\ V  V /| | | | | | | |  __/ |  |_|" << endl;
 	cout << "|_|___/   \\__|_| |_|\___|     \\_/\\_/ |_|_| |_|_| |_|\\___|_|  (_)" << endl;
+	cout << "\n" << endl;
+	getKeyToContinue(); return;
 }
 
 
@@ -302,6 +299,8 @@ void Game::printWinnerIs2() const
 	cout << "| / __|  | __| '_ \\ / _ \\  \\ \\ /\\ / / | '_ \\| '_ \\ / _ \\ '__| |" << endl;
 	cout << "| \\__ \\  | |_| | | |  __/   \\ V  V /| | | | | | | |  __/ |  |_|" << endl;
 	cout << "|_|___/   \\__|_| |_|\___|     \\_/\\_/ |_|_| |_|_| |_|\\___|_|  (_)" << endl;
+	cout << "\n" << endl;
+	getKeyToContinue(); return;
 }
 
 
@@ -312,10 +311,12 @@ void Game::printItsTie() const
 	cout << "    | || __|// __|   / _` |  | __| |/ _ \\ | " << endl;
 	cout << "    | || |_  \\__ \\  | (_| |  | |_| |  __/_| " << endl;
 	cout << "   |___|\\__| |___/   \\__,_|   \\__|_|\\___(_) " << endl;
+	cout << "\n" << endl;
+	getKeyToContinue(); return;
 }
 
 
-void Game::printWelcome() const
+void Game::printWelcome(int& winner) const
 {
 	system("cls");
 	cout << "__        __   _                             _                " << endl;
@@ -329,10 +330,8 @@ void Game::printWelcome() const
 	cout << "              | ||  __/ |_| |  | \\__ \\_|  " << endl;
 	cout << "               \\__\\___|\\__|_|  |_|___(_)   " << endl;
 	cout << "\n" << endl;
-
-
 	cout << "(1) Start a new game" << endl;
-	if (getIsPaused())
+	if (getIsPaused() && winner == -1)
 		cout << "(2) Continue a paused game" << endl;
 	cout << "(8) Present instructions and keys" << endl;
 	cout << "(9) EXIT" << endl;
@@ -341,6 +340,7 @@ void Game::printWelcome() const
 
 void Game::printGameOver() const
 {
+	system("cls");
 	cout << "   ____                          ___                 " << endl;
 	cout << "  / ___| __ _ _ __ ___   ___    / _ \\__   _____ _ __ " << endl;
 	cout << " | |  _ / _` | '_ ` _ \\ / _ \\  | | | \\ \\ / / _ \\ '__|" << endl;
