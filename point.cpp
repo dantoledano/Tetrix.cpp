@@ -34,5 +34,8 @@ void Point::movePoint(GameConfig::eKeys key)
 	case GameConfig::eKeys::DOWN:
 		y += 1;
 		break;
+	case GameConfig::eKeys::UP:
+		y -= 1;
+		break;
 	}
 }
