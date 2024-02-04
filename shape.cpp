@@ -4,7 +4,6 @@
 #include <windows.h>
 #include "general.h"
 
-const int NUM_CUBES = 4;
 
 void Shape::init(char id, Board& board)
 {// init position of shape at the top of the board
@@ -226,18 +225,9 @@ void Shape::rotateCounterClockwise(Board& board)
 		tempShape.body[i].setX(pivotX + relativeY);
 		tempShape.body[i].setY(pivotY - relativeX);
 	}
-	bool collided = false;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
-		{
-			collided = true;
-		}
-	}
-	if (!tempShape.hasReachedToAnotherShape(board) && !collided) {
+	tempShape.correctLocationOfShape();  // in case of deviation
+	if (!tempShape.hasReachedToAnotherShape(board) && !tempShape.collidedWithAnotherShape(board))
 		*this = tempShape; // applaying the rotation only if the move is valid
-	}
-	correctLocationOfShape();  // in case of deviation
 }
 
 
@@ -263,18 +253,9 @@ void Shape::rotateClockwise(Board& board)
 		tempShape.body[i].setX(pivotX - relativeY);
 		tempShape.body[i].setY(pivotY + relativeX);
 	}
-	bool collided = false;
-	for (int i = 0; i < NUM_CUBES; i++)
-	{// check collision for every point. collision in one point is enough to declare the move invalid.
-		if (board.matrix[tempShape.body[i].getY() - 1][tempShape.body[i].getX() - 1] == GameConfig::BLOCK)
-		{
-			collided = true;
-		}
-	}
-	if (!tempShape.hasReachedToAnotherShape(board) && !collided) {
-		*this = tempShape; // applaying the rotation only if the move is valid
-	}
-	correctLocationOfShape(); // in case of deviation
+	tempShape.correctLocationOfShape(); // in case of deviation
+	if (!tempShape.hasReachedToAnotherShape(board) && !tempShape.collidedWithAnotherShape(board)) 
+		*this = tempShape; // applaying the rotation only if the move is valid	
 }
 
 
@@ -302,6 +283,24 @@ void Shape::correctLocationOfShape()
 			body[i].movePoint(GameConfig::eKeys::DOWN);
 		}
 	}
+	while (passedLowerWall())
+	{
+		for (int i = 0; i < NUM_CUBES; i++)
+		{
+			body[i].movePoint(GameConfig::eKeys::UP);
+		}
+	}
+}
+
+
+bool Shape::passedLowerWall() const
+{
+	for (int i = 0; i < NUM_CUBES; i++)
+	{
+		if (body[i].getY() > GameConfig::GAME_HEIGHT)
+			return true;
+	}
+	return false;
 }
 
 
