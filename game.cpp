@@ -38,6 +38,7 @@ void Game::printMenu() { //handling menu and end of the game.
 		if (winner != -1) {
 			printWinner(winner); 
 			winner = -1; // reset winner for potentially next game
+			setIsPaused(false); // reset status to not paused
 		}
 	}
 	printGameOver(); // end of game- printing game over and ending the program
