@@ -8,6 +8,8 @@
 #include "board.h"
 #include "game.h"
 
+
 void gotoxy(int, int);
 void clrscr();
 char randomType();
+void getKeyToContinue();
