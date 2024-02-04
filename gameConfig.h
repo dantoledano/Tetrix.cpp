@@ -2,7 +2,7 @@
 class GameConfig
 {
 public:
-	enum class eKeys { LEFT = 'a', RIGHT = 'd', DROP = 'x', ROTATE = 's', CROTATE = 'w', DOWN = 'z', ESC = 27 };
+	enum class eKeys { LEFT = 'a', RIGHT = 'd', DROP = 'x', ROTATE = 's', CROTATE = 'w', DOWN = 'z', ESC = 27, UP='g'};
 
 	enum class eKeys2 { LEFT = 'j', RIGHT = 'l', DROP = 'm', ROTATE = 'k', CROTATE = 'i', DOWN = 'z', ESC = 27 };
 
