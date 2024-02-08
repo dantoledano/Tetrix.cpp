@@ -160,8 +160,10 @@ void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
 char Game::invertToLowerCase(char ch) {
 	// checking if key is valid and converting to lower case.
 	for (int i = 0; i < 5; i++) {
-		if (board1.keys[i] == ch || board1.keys[i] == (ch + ('a' - 'A'))
-			|| board2.keys[i] == ch || board2.keys[i] == (ch + ('a' - 'A')))
+		char key1 = board1.getKeysAt(i);
+		char key2 = board2.getKeysAt(i);
+		if (key1 == ch || key1 == (ch + ('a' - 'A')) 
+			|| key2 == ch || key2 == (ch + ('a' - 'A')))
 		{
 			if (ch >= 'A' && ch <= 'Z')
 				return ch + ('a' - 'A');
