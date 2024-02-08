@@ -6,6 +6,8 @@ public:
 
 	enum class eKeys2 { LEFT = 'j', RIGHT = 'l', DROP = 'm', ROTATE = 'k', CROTATE = 'i', DOWN = 'z', ESC = 27 };
 
+	static constexpr int NUM_KEYS = 5;
+
 	static constexpr int GAME_WIDTH = 12;
 	static constexpr int GAME_HEIGHT = 18;
 
