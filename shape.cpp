@@ -98,19 +98,20 @@ void Shape::move(Board& board) {
 	// re-drawing of the shape at new location
 	drawShape(board.getLeft(), GameConfig::MIN_Y);
 	if (hasReachedBottom() || hasReachedToAnotherShape(board))
-	{// update matrix
+	{
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		if (id == GameConfig::BOMB) {
-			board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			bool shouldOrganize = board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			if(shouldOrganize)
+				board.organizeBoard();
 			setHasExploaded(true);
-			board.organizeBoard();
 		}
 		else {
 			for (int i = 0; i < NUM_CUBES; i++)
 			{// enter shape in to matrix
 				activeX = body[i].getX()-1;
 				activeY = body[i].getY()-1;
-				board.matrix[activeY][activeX] = GameConfig::BLOCK;
+				board.setMatrixAt(activeY, activeX, GameConfig::BLOCK);
 			}
 		}
 		board.DrawBoard();
@@ -128,7 +129,7 @@ bool Shape::collidedWithAnotherShape(Board& board) const
 	// is another shape (even a part of it) we rule out the move.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.matrix[body[i].getY() - 1][body[i].getX() - 1] == '#')
+		if (board.getMatrixAt(body[i].getY() - 1, body[i].getX() - 1) == GameConfig::BLOCK)
 		{
 			return true;
 		}
@@ -143,7 +144,7 @@ bool Shape::hasReachedToAnotherShape(Board& board) const
 	// from progressing any further.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.matrix[body[i].getY()][body[i].getX() - 1] == '#')
+		if (board.getMatrixAt(body[i].getY(), body[i].getX() - 1) == GameConfig::BLOCK)
 			return true;
 	}
 	return false;
