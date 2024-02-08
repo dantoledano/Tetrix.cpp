@@ -5,6 +5,21 @@
 using namespace std;
 
 
+void Board::setMatrixAt(size_t row, size_t col, char value) {
+	matrix[row][col] = value;
+}
+
+
+char Board::getMatrixAt(size_t row, size_t col) const {
+	return matrix[row][col];
+}
+
+
+char Board::getKeysAt(size_t index) const {
+    return keys[index];
+}
+
+
 Board::Board(int xPos, int score) : xPos(xPos), score(score)
 { // initializing the board to be empty.
     for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
@@ -22,7 +37,6 @@ void Board::resetBoard()
             matrix[i][j] = GameConfig::SPACE;
         }
     }
-   // setFooAt(0, 0, '*');
 }
 
 
@@ -109,7 +123,6 @@ void Board::organizeBoard()
 }
 
 
-
 void Board::DrawCubeInBoard(int x, int y, char ch) {
     gotoxy(x + xPos, y + GameConfig::MIN_Y);
     cout << ch;
@@ -130,37 +143,29 @@ void Board::DrawBoard() {
 }
 
 
-void Board::expload(int activeX, int activeY)
+bool Board::expload(int activeX, int activeY)  
 {
-    int count = 1;
-    while (count < 5) { // right
-        if (activeX + count > GameConfig::GAME_WIDTH-1)
-            break;
-        matrix[activeY][activeX + count] = GameConfig::SPACE;
-        count++;
+    int startY, endY;
+    int startX, endX;
+    bool hasErasedBlocks = false;
+
+    activeY < 4 ? startY = 0 : startY = activeY - 4;
+    activeY > 13 ? endY = 17 : endY = activeY + 4;
+    activeX < 4 ? startX = 0 : startX = activeX - 4;
+    activeX > 7 ? endX = 11 : endX = activeX + 4;
+
+    for (int i = startY; i <= endY; i++){
+        for (int j = startX; j <= endX; j++){
+            if (matrix[i][j] == GameConfig::BLOCK)
+                hasErasedBlocks = true;
+            matrix[i][j] = GameConfig::SPACE;
+        }
     }
-    count = 1;
-    while (count < 5) { // left
-        if (activeX - count < 0)
-            break;
-        matrix[activeY][activeX - count] = GameConfig::SPACE;
-        count++;
-    }
-    count = 1;
-    while (count < 5){ // down
-        if (activeY + count > GameConfig::GAME_HEIGHT-1)
-            break;
-        matrix[activeY + count][activeX] = GameConfig::SPACE;
-        count++;
-    }
-    count = 1;
-    while (count < 5) { // up
-        if (activeY - count < 0)
-            break;
-        matrix[activeY - count][activeX] = GameConfig::SPACE;
-        count++;
-    }
+    return hasErasedBlocks;
 }
+
+
+
 
 
 
