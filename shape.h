@@ -2,6 +2,7 @@
 #include "point.h"
 #include "board.h"
 
+
 class Shape
 {
 private:
@@ -34,4 +35,9 @@ public:
 	bool collidedWithAnotherShape(Board& board) const;
 	bool isGameOver() const;
 	bool isShapeOver(Board& board) const;
+	int  getSumOfHeights() const;
+	int getFirstX() { return body[0].getX(); }
+	char getID() { return id; }
+	void updateMatrix(Board& b, bool add);
+	int getHeightOfCube(int i) const;
 };
