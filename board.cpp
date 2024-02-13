@@ -2,10 +2,24 @@
 #include "point.h"
 #include "general.h"
 #include "gameConfig.h"
-//#include "shape.h"
 using namespace std;
 
 class Shape;
+
+void Board::setMatrixAt(size_t row, size_t col, char value) {
+    matrix[row][col] = value;
+}
+
+
+char Board::getMatrixAt(size_t row, size_t col) const {
+    return matrix[row][col];
+}
+
+
+char Board::getKeysAt(size_t index) const {
+    return keys[index];
+}
+
 
 Board::Board(int xPos, int score) : xPos(xPos), score(score)
 { // initializing the board to be empty.
@@ -24,7 +38,6 @@ void Board::resetBoard()
             matrix[i][j] = GameConfig::SPACE;
         }
     }
-    // setFooAt(0, 0, '*');
 }
 
 
@@ -111,7 +124,6 @@ void Board::organizeBoard()
 }
 
 
-
 void Board::DrawCubeInBoard(int x, int y, char ch) {
     gotoxy(x + xPos, y + GameConfig::MIN_Y);
     cout << ch;
@@ -132,55 +144,35 @@ void Board::DrawBoard() {
 }
 
 
-void Board::expload(int activeX, int activeY)
+bool Board::expload(int activeX, int activeY)
 {
-    int count = 1;
-    while (count < 5) { // right
-        if (activeX + count > GameConfig::GAME_WIDTH - 1)
-            break;
-        matrix[activeY][activeX + count] = GameConfig::SPACE;
-        count++;
+    int startY, endY;
+    int startX, endX;
+    bool hasErasedBlocks = false;
+
+    activeY < 4 ? startY = 0 : startY = activeY - 4;
+    activeY > 13 ? endY = 17 : endY = activeY + 4;
+    activeX < 4 ? startX = 0 : startX = activeX - 4;
+    activeX > 7 ? endX = 11 : endX = activeX + 4;
+
+    for (int i = startY; i <= endY; i++) {
+        for (int j = startX; j <= endX; j++) {
+            if (matrix[i][j] == GameConfig::BLOCK)
+                hasErasedBlocks = true;
+            matrix[i][j] = GameConfig::SPACE;
+        }
     }
-    count = 1;
-    while (count < 5) { // left
-        if (activeX - count < 0)
-            break;
-        matrix[activeY][activeX - count] = GameConfig::SPACE;
-        count++;
-    }
-    count = 1;
-    while (count < 5) { // down
-        if (activeY + count > GameConfig::GAME_HEIGHT - 1)
-            break;
-        matrix[activeY + count][activeX] = GameConfig::SPACE;
-        count++;
-    }
-    count = 1;
-    while (count < 5) { // up
-        if (activeY - count < 0)
-            break;
-        matrix[activeY - count][activeX] = GameConfig::SPACE;
-        count++;
-    }
+    return hasErasedBlocks;
 }
 
+/////////////////////////////////////////////////////////////////////
 
-
-///////////////////////////////////////////////////////
-
-//void Board::copyMatrix(char dest[][GameConfig::GAME_WIDTH], const char src[][GameConfig::GAME_WIDTH]) {
-//    for (int i = 0; i < GameConfig::GAME_HEIGHT; ++i) {
-//        for (int j = 0; j < GameConfig::GAME_WIDTH; ++j) {
-//            dest[i][j] = src[i][j];
-//        }
-//    }
-//}
 
 int Board::evaluateScore(const Shape& s) {
     int linesClearedScore = checkLines(s) * 100;
     int heightScore = s.getSumOfHeights() * 10;
     int gapScore = countGaps() * (-10);
-    return  linesClearedScore +  heightScore + gapScore;
+    return  linesClearedScore + heightScore + gapScore;
 }
 
 int Board::checkLines(const Shape& s) {
@@ -195,7 +187,7 @@ int Board::checkLines(const Shape& s) {
 
 void Board::findBestMove(Shape& shape) {
     int bestScore, score;
-    int numOfRotations=0, xPosition=0;
+    int numOfRotations = 0, xPosition = 0;
     Shape startLocation = shape;
     for (int rotation = 0; rotation < 4; ++rotation) {
         for (int position = 0; position < GameConfig::GAME_WIDTH; ++position) {
@@ -212,7 +204,7 @@ void Board::findBestMove(Shape& shape) {
             shape = startLocation;
         }
     }
-    this->applyMove(shape, numOfRotations, xPosition,true);
+    this->applyMove(shape, numOfRotations, xPosition, true);
 }
 
 
@@ -261,7 +253,7 @@ void Board::applyMove(Shape& shape, int rotation, int position, bool isMainBoard
     while (numOfSteps != 0) {
         if (numOfSteps < 0) {
             shape.moveShapeToTheLeft(*this);
-           // shape.drawShape(b.getLeft(), GameConfig::MIN_Y);
+            // shape.drawShape(b.getLeft(), GameConfig::MIN_Y);
             numOfSteps++;
         }
         else if (numOfSteps > 0) {
@@ -274,10 +266,10 @@ void Board::applyMove(Shape& shape, int rotation, int position, bool isMainBoard
     while (!shape.hasReachedBottom() && !shape.hasReachedToAnotherShape(*this)) {
         shape.moveShapeDown(*this);
     }
-    shape.updateMatrix(*this,true);
+    shape.updateMatrix(*this, true);
     if (isMainBoard) {
         shape.move(*this);
-       // shape.drawShape(this->getLeft(), GameConfig::MIN_Y); // מצייר בתקווה במיקום הטוב ביותר
+        // shape.drawShape(this->getLeft(), GameConfig::MIN_Y); // מצייר בתקווה במיקום הטוב ביותר
     }
     int completedLine = clearFullLines();
     setScore(getScore() + (completedLine * 100));
@@ -289,7 +281,7 @@ int Board::countGaps() {
     int gap_count = 0;
     for (int col = 0; col < GameConfig::GAME_WIDTH; ++col) {
         bool is_gap = false;
-        int row = GameConfig::GAME_HEIGHT-1;
+        int row = GameConfig::GAME_HEIGHT - 1;
         while (row >= 0) {
             // Check for an empty cell
             if (matrix[row][col] == ' ') {
@@ -305,4 +297,15 @@ int Board::countGaps() {
     }
     return gap_count;
 }
+
+
+
+
+
+
+
+
+
+
+
 
