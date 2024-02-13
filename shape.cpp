@@ -59,7 +59,6 @@ void Shape::init(char id, Board& board)
 }
 
 
-
 bool Shape::isShapeOver(Board& board) const {
 	// if the shape reached the bottom or landed on another shape
 	// it means this current shape has finished it's job.
@@ -77,11 +76,6 @@ void Shape::eraseShape(int left, int top)
 
 void Shape::drawShape(int left, int top)
 {
-	//if (id == GameConfig::BOMB) {
-	//	for (int i = 0; i < NUM_CUBES; i++) {
-	//		body[i].draw(GameConfig::BOMB, left, top);
-	//	}
-	//}
 	if (id == GameConfig::BOMB)
 		body[0].draw(GameConfig::BOMB, left, top);
 
@@ -94,20 +88,21 @@ void Shape::drawShape(int left, int top)
 
 
 void Shape::move(Board& board) {
-//	int activeX, activeY;
+	int activeX, activeY;
 	int completedLine = 0;
 	// re-drawing of the shape at new location
 	drawShape(board.getLeft(), GameConfig::MIN_Y);
 	if (hasReachedBottom() || hasReachedToAnotherShape(board))
-	{// update matrix
+	{
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		if (id == GameConfig::BOMB) {
-			board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			bool shouldOrganize = board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			if (shouldOrganize)
+				board.organizeBoard();
 			setHasExploaded(true);
-			board.organizeBoard();
 		}
 		else {
-			updateMatrix(board,true);
+			updateMatrix(board, true);
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
@@ -124,7 +119,7 @@ bool Shape::collidedWithAnotherShape(Board& board) const
 	// is another shape (even a part of it) we rule out the move.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.matrix[body[i].getY() - 1][body[i].getX() - 1] == '#')
+		if (board.getMatrixAt(body[i].getY() - 1, body[i].getX() - 1) == GameConfig::BLOCK)
 		{
 			return true;
 		}
@@ -139,7 +134,7 @@ bool Shape::hasReachedToAnotherShape(Board& board) const
 	// from progressing any further.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.matrix[body[i].getY()][body[i].getX() - 1] == '#')
+		if (board.getMatrixAt(body[i].getY(), body[i].getX() - 1) == GameConfig::BLOCK)
 			return true;
 	}
 	return false;
@@ -390,6 +385,8 @@ bool Shape::isGameOver() const {
 	return false;
 }
 
+
+
 int  Shape::getSumOfHeights() const {
 	int sum = 0;
 	for (int i = 0; i < NUM_CUBES; i++) {
@@ -398,18 +395,21 @@ int  Shape::getSumOfHeights() const {
 	return sum;
 }
 
+
+
+int Shape::getHeightOfCube(int i) const {
+	return  body[i].getY() - 1;
+}
+
+
 void Shape::updateMatrix(Board& b, bool add) {
 	int activeX, activeY;
 	for (int i = 0; i < NUM_CUBES; i++) {
 		activeX = body[i].getX() - 1;
 		activeY = body[i].getY() - 1;
-		if(add)
-		    b.matrix[activeY][activeX] = GameConfig::BLOCK;
-		else 
-			b.matrix[activeY][activeX] = GameConfig::SPACE;
+		if (add)
+			b.setMatrixAt(activeY, activeX, GameConfig::BLOCK);
+		else
+			b.setMatrixAt(activeY, activeX, GameConfig::SPACE);
 	}
-}
-
-int Shape::getHeightOfCube(int i) const {
-	return  body[i].getY() - 1;
 }
