@@ -59,6 +59,7 @@ void Shape::init(char id, Board& board)
 }
 
 
+
 bool Shape::isShapeOver(Board& board) const {
 	// if the shape reached the bottom or landed on another shape
 	// it means this current shape has finished it's job.
@@ -81,10 +82,10 @@ void Shape::drawShape(int left, int top)
 	//		body[i].draw(GameConfig::BOMB, left, top);
 	//	}
 	//}
-	if (id == GameConfig::BOMB) 
+	if (id == GameConfig::BOMB)
 		body[0].draw(GameConfig::BOMB, left, top);
 
-	else { 
+	else {
 		for (int i = 0; i < NUM_CUBES; i++) {
 			body[i].draw(GameConfig::BLOCK, left, top);
 		}
@@ -93,26 +94,20 @@ void Shape::drawShape(int left, int top)
 
 
 void Shape::move(Board& board) {
-	int activeX, activeY;
+//	int activeX, activeY;
 	int completedLine = 0;
 	// re-drawing of the shape at new location
 	drawShape(board.getLeft(), GameConfig::MIN_Y);
 	if (hasReachedBottom() || hasReachedToAnotherShape(board))
-	{
+	{// update matrix
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		if (id == GameConfig::BOMB) {
-			bool shouldOrganize = board.expload(body[0].getX() - 1, body[0].getY() - 1);
-			if(shouldOrganize)
-				board.organizeBoard();
+			board.expload(body[0].getX() - 1, body[0].getY() - 1);
 			setHasExploaded(true);
+			board.organizeBoard();
 		}
 		else {
-			for (int i = 0; i < NUM_CUBES; i++)
-			{// enter shape in to matrix
-				activeX = body[i].getX()-1;
-				activeY = body[i].getY()-1;
-				board.setMatrixAt(activeY, activeX, GameConfig::BLOCK);
-			}
+			updateMatrix(board,true);
 		}
 		board.DrawBoard();
 		completedLine = board.clearFullLines();
@@ -129,7 +124,7 @@ bool Shape::collidedWithAnotherShape(Board& board) const
 	// is another shape (even a part of it) we rule out the move.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.getMatrixAt(body[i].getY() - 1, body[i].getX() - 1) == GameConfig::BLOCK)
+		if (board.matrix[body[i].getY() - 1][body[i].getX() - 1] == '#')
 		{
 			return true;
 		}
@@ -144,7 +139,7 @@ bool Shape::hasReachedToAnotherShape(Board& board) const
 	// from progressing any further.
 	for (int i = 0; i < NUM_CUBES; i++)
 	{
-		if (board.getMatrixAt(body[i].getY(), body[i].getX() - 1) == GameConfig::BLOCK)
+		if (board.matrix[body[i].getY()][body[i].getX() - 1] == '#')
 			return true;
 	}
 	return false;
@@ -210,7 +205,7 @@ void Shape::rotateCounterClockwise(Board& board)
  // a collision - we dont allow the rotation.
  // if the rotation is causing the shape to leave the frames of the board
  // we push the shape back in to the board next to the wall.
-	if (this->id == 'O' || id== GameConfig::BOMB) {
+	if (this->id == 'O' || id == GameConfig::BOMB) {
 		moveShapeDown(board);
 		return;
 	}
@@ -255,7 +250,7 @@ void Shape::rotateClockwise(Board& board)
 		tempShape.body[i].setY(pivotY + relativeX);
 	}
 	tempShape.correctLocationOfShape(); // in case of deviation
-	if (!tempShape.hasReachedToAnotherShape(board) && !tempShape.collidedWithAnotherShape(board)) 
+	if (!tempShape.hasReachedToAnotherShape(board) && !tempShape.collidedWithAnotherShape(board))
 		*this = tempShape; // applaying the rotation only if the move is valid	
 }
 
@@ -393,4 +388,28 @@ bool Shape::isGameOver() const {
 			return true;
 	}
 	return false;
+}
+
+int  Shape::getSumOfHeights() const {
+	int sum = 0;
+	for (int i = 0; i < NUM_CUBES; i++) {
+		sum += body[i].getY();
+	}
+	return sum;
+}
+
+void Shape::updateMatrix(Board& b, bool add) {
+	int activeX, activeY;
+	for (int i = 0; i < NUM_CUBES; i++) {
+		activeX = body[i].getX() - 1;
+		activeY = body[i].getY() - 1;
+		if(add)
+		    b.matrix[activeY][activeX] = GameConfig::BLOCK;
+		else 
+			b.matrix[activeY][activeX] = GameConfig::SPACE;
+	}
+}
+
+int Shape::getHeightOfCube(int i) const {
+	return  body[i].getY() - 1;
 }
