@@ -4,7 +4,7 @@ using namespace std;
 
 Game::Game() // ctor- setting each playr's keys and the pace of the game
 {
-	//board1.setKeys('a', 'd', 's', 'w', 'x');
+	////board1.setKeys('a', 'd', 's', 'w', 'x');
 	//board1.setKeys((char)GameConfig::eKeys::LEFT, (char)GameConfig::eKeys::RIGHT,
 	//	(char)GameConfig::eKeys::ROTATE, (char)GameConfig::eKeys::CROTATE, (char)GameConfig::eKeys::DROP);
 	////board2.setKeys('j', 'l', 'k', 'i', 'm');
@@ -45,8 +45,7 @@ void Game::printMenu() { //handling menu and end of the game.
 }
 
 
-void Game::run(int& winner)
-{// game loop:
+void Game::run(int& winner) {// game loop:
 	board1.drawBorder();
 	board1.DrawBoard();
 	board2.drawBorder();
@@ -59,7 +58,7 @@ void Game::run(int& winner)
 	while (true) {
 		printScore(board1, board2);
 		deployShape(isShapeOver1, isShapeOver2, s1, s2);
-		Sleep(1300);
+		Sleep(pace);
 		char keyPressed = (char)GameConfig::eKeys::DOWN;
 		if (_kbhit())
 		{
@@ -163,8 +162,10 @@ void Game::deployShape(bool& l, bool& r, Shape& s1, Shape& s2) {
 //char Game::invertToLowerCase(char ch) {
 //	// checking if key is valid and converting to lower case.
 //	for (int i = 0; i < 5; i++) {
-//		if (board1.keys[i] == ch || board1.keys[i] == (ch + ('a' - 'A'))
-//			|| board2.keys[i] == ch || board2.keys[i] == (ch + ('a' - 'A')))
+//		char key1 = board1.getKeysAt(i);
+//		char key2 = board2.getKeysAt(i);
+//		if (key1 == ch || key1 == (ch + ('a' - 'A'))
+//			|| key2 == ch || key2 == (ch + ('a' - 'A')))
 //		{
 //			if (ch >= 'A' && ch <= 'Z')
 //				return ch + ('a' - 'A');
