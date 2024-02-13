@@ -2,22 +2,25 @@
 #include "gameConfig.h"
 #include "board.h"
 #include "point.h"
-//#include "shape.h"
 
 class Shape;
 
 class Board
 {
-	int xPos;
+	const int xPos;
 	int score;
+	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
+	char keys[GameConfig::NUM_KEYS];
+
 public:
 	Board(int xPos, int score); //ctor - set xMIN of player, set score
-	//char keys[5];
-	char matrix[GameConfig::GAME_HEIGHT][GameConfig::GAME_WIDTH];
+	void setMatrixAt(size_t row, size_t col, char value);
+	char getMatrixAt(size_t row, size_t col) const;
 	int getScore() const { return this->score; }
 	void setScore(const int& score_) { score = score_; }
-	//void setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey);
-	int getLeft() { return xPos; }
+	char getKeysAt(size_t index) const;
+	void setKeys(char leftKey, char rightKey, char rotateKey, char crotateKey, char dropKey);
+	int getLeft() const { return this->xPos; }
 	void drawBorder() const;
 	void eraseLine(int indexLine);
 	bool isFullLine(int line) const;
@@ -25,7 +28,7 @@ public:
 	void DrawBoard();
 	void DrawCubeInBoard(int x, int y, char ch);
 	void resetBoard();
-	void expload(int activeX, int activeY);
+	bool expload(int activeX, int activeY);
 	void organizeBoard();
 	int evaluateScore(const Shape& s);
 	void findBestMove(Shape& shape);
@@ -33,5 +36,4 @@ public:
 	void applyMove(Shape& shape, int rotation, int position, bool isMainBoard);
 	int checkLines(const Shape& s);
 	int countGaps();
-	//void copyMatrix(char dest[][GameConfig::GAME_WIDTH], const char src[][GameConfig::GAME_WIDTH]);
 };
