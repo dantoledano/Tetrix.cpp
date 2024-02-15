@@ -7,11 +7,13 @@ class Shape
 private:
 	char id;
 	Point body[4];
-	bool hasExploaded = false;
+	bool hasExploded = false;
 public:
 	static constexpr int NUM_CUBES = 4;
-	int getHasExploaded() const { return this->hasExploaded; }
-	void setHasExploaded(bool hasExploaded) { this->hasExploaded = hasExploaded; }
+	Point getBodyAt(int index) const { return this->body[index]; }
+	char getId() const { return this->id; }
+	int getHasExploded() const { return this->hasExploded; }
+	void setHasExploded(bool hasExploded) { this->hasExploded = hasExploded; }
 	void init(char id, Board& board);
 	void move(Board& board);
 	void rotateCounterClockwise(Board& board);
@@ -35,7 +37,7 @@ public:
 	bool isGameOver() const;
 	bool isShapeOver(Board& board) const;
 	int  getSumOfHeights() const;
-	int getFirstX() { return body[0].getX(); }
+	int getFirstX() const;
 	char getID() { return id; }
 	int getHeightOfCube(int i) const;
 	void updateMatrix(Board& b, bool add);
