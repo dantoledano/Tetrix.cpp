@@ -28,12 +28,13 @@ public:
 	void DrawBoard();
 	void DrawCubeInBoard(int x, int y, char ch);
 	void resetBoard();
-	bool expload(int activeX, int activeY);
+	bool explod(int activeX, int activeY);
 	void organizeBoard();
 	int evaluateScore(const Shape& s);
-	void findBestMove(Shape& shape);
+	void findBestMove(Shape& shape, int& chosenRotation, int& chosenPosition);
 	int getHolesScore();
-	void applyMove(Shape& shape, int rotation, int position, bool isMainBoard);
+	void applyMove(Shape& shape, int rotation, int position);
 	int checkLines(const Shape& s);
 	int countGaps();
+	int getHightOfBoard();
 };
