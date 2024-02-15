@@ -96,10 +96,10 @@ void Shape::move(Board& board) {
 	{
 		eraseShape(board.getLeft(), GameConfig::MIN_Y);
 		if (id == GameConfig::BOMB) {
-			bool shouldOrganize = board.expload(body[0].getX() - 1, body[0].getY() - 1);
+			bool shouldOrganize = board.explod(body[0].getX() - 1, body[0].getY() - 1);
 			if (shouldOrganize)
 				board.organizeBoard();
-			setHasExploaded(true);
+			setHasExploded(true);
 		}
 		else {
 			updateMatrix(board, true);
@@ -412,4 +412,15 @@ void Shape::updateMatrix(Board& b, bool add) {
 		else
 			b.setMatrixAt(activeY, activeX, GameConfig::SPACE);
 	}
+}
+
+
+int Shape::getFirstX() const {
+	int minX = body[0].getX();
+	for (int i = 1; i < 4; i++){
+		int currX = body[i].getX();
+		if (currX < minX)
+			minX = currX;
+	}
+	return minX - 1;
 }
