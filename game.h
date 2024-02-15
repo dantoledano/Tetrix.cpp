@@ -20,7 +20,7 @@ public:
     static constexpr int INSTRUCTIONS_CHOICE = 8;
     static constexpr int PAUSE_CHOICE = 2;
     static constexpr int NEW_GAME_CHOICE = 1;
-    static constexpr int PACE = 500;
+    static constexpr int PACE = 300;
     Game();  // ctor - set keys, score
     bool getIsPaused() const { return this->isPaused; }
     void setIsPaused(bool isPaused) { this->isPaused = isPaused; }
@@ -28,9 +28,8 @@ public:
     void printMenu();
     void printInstructionsAndKeys() const;
     void printTableLine() const;
-    void checkKeyPressed(char keyPressed, Shape& Leftshape, Shape& RightShape);
+    void performKeyPressed(char keyPressed, Shape& Leftshape, Shape& RightShape);
     char invertToLowerCase(char ch);
-    void deployShape(bool& l, bool& r, Shape& s1, Shape& s2);
     void printWinner(int num) const;
     void printWinnerIs1() const;
     void printWinnerIs2() const;
@@ -38,4 +37,9 @@ public:
     void printWelcome(int& winner) const;
     void printGameOver() const;
     void printScore(Board& board1, Board& board2) const;
+    void displayBoardsAndBorders();
+    void receiveKeyOfPlayer1(const Shape& s1, char& keyPressed, int& numRotationPlayer1, int& xPositionPlayer1);
+    void receiveKeyOfPlayer2(const Shape& s2, char& keyPressed, int& numRotationPlayer2, int& xPositionPlayer2);
+    void preformUpdatesAfterLanding(Shape& s1, Shape& s2, bool& isShapeOver1, bool& isShapeOver2);
+
 };
